@@ -17,19 +17,6 @@ If you use this template or any of the code within for your project, please cite
 }
 ```
 
-## Aside on SSH Keys
-
-SSH keys are a more secure, less annoying alternative to typing your password every time you commit
-your code. This allows you to commit more often, leading to more granular code updates and a better
-sense of progress. When working on group projects, this is desirable to make sure everyone is
-working on the same code.
-
-[Here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
-are the instructions for adding an ssh key to GitHub. If you don't know what an ssh key, first
-[check to see if your computer already has
-one](https://docs.github.com/en/articles/checking-for-existing-ssh-keys). If not, [generate
-one](https://docs.github.com/en/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent),
-then add it to GitHub.
 
 ## Dependencies
 
