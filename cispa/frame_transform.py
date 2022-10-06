@@ -1,4 +1,5 @@
 from __future__ import annotations
+from selectors import EpollSelector
 from typing import Union, overload
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -64,7 +65,49 @@ class FrameTransform:
     @classmethod
     def from_matched_points(cls, X: np.ndarray, Y: np.ndarray):
         # Your implementation
+        Data_Num = np.size(X,0)
+
+        F_d,F_0,F = initialize()
+
+        X = np.append(X,np.ones(shape=(Data_Num,1)),1)
+        Y = np.append(Y,np.ones(shape=(Data_Num,1)),1)
+        X = np.transpose(X)
+        Y = np.transpose(Y)
+
+        while ( True ):
+            X_k = np.matmul(F,X)
+
+            # Least Square Terms are Ax=b
+            A,b = Calc_Coefficient(X_k,Y)
+            error = np.linalg.lstsq(A,b)
+            if error.norm < some_threshold : break
+            
         R = np.eye(3)
         p = np.zeros(3)
 
         return cls(R, p)
+
+def initialize():
+    return np.eye(4),np.eye(4),np.eye(4)
+
+def Calc_Coefficient(X: np.ndarray, Y: np.ndarray):
+    A = np.empty((1,6))
+    b = np.empty(1)
+
+    for i in range(np.size(X,1)):
+
+        A_i = np.hstack((skew(-X[:,i]),np.eye(3)))
+        A = np.append(A,A_i,0)
+
+        bi = Y[:,i] - X[:,i]
+        b = np.append(b,bi,0)
+
+    A = np.delete(A,0,0) # remove the first empty row
+    b = np.delete(b,0,0)
+    print(b)
+    return A,b
+
+def skew(x):
+    return np.array([[0, -x[2], x[1]],
+                     [x[2], 0, -x[0]],
+                     [-x[1], x[0], 0]])

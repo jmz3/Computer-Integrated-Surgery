@@ -1,4 +1,5 @@
 from pathlib import Path
+from cispa.Preprocess import LoadTxtData
 import cispa
 import click
 import logging
@@ -24,17 +25,19 @@ def main(data_dir, output_dir, name):
     output_dir = Path(output_dir).expanduser()
 
     cal_path = data_dir / f"{name}-calbody.txt"
-    # cal_body = read_cal_data(cal_path)
+    cal_body,calbody_info = LoadTxtData(cal_path)
+    # log.info(cal_body)
+    # log.info(calbody_info)
 
     if not output_dir.exists():
         output_dir.mkdir()
 
     F = FrameTransform(np.eye(3), np.zeros(3))
+    F.from_matched_points(cal_body,cal_body)
     log.info(f"F = {F}")
 
-    ...
-
-    tip_in_tool, post_in_world = pivot_calibration(frames)
+    
+    # tip_in_tool, post_in_world = pivot_calibration(frames)
 
 
 if __name__ == "__main__":
