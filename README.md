@@ -2,7 +2,11 @@
 
 This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins University
 
-This repository is created and maintained by Jiaming "Jeremy" Zhang and CHongjun Yang. 
+This repository is created and maintained by
+- Jiaming "Jeremy" Zhang: jzhan282@jhu.edu
+- CHongjun Yang:          cyang94@jhu.edu
+
+The general structure is borrowed from Benjamin's Template:
 
 ```bibtex
 @misc{benjamindkilleen2022Sep,
@@ -18,32 +22,23 @@ This repository is created and maintained by Jiaming "Jeremy" Zhang and CHongjun
 
 ## Dependencies
 
-We recommend using [Anaconda3](https://www.anaconda.com/products/individual) to manage your environments.
+This repo is developed via PYTHON 3.9.13 with the Dependencies as follows:
 
-- MacOS: use the command line installer. From the terminal, run
-
-  ```sh
-  wget https://repo.anaconda.com/archive/Anaconda3-2021.05-MacOSX-x86_64.sh
-  sh Anaconda3-2021.05-MacOSX-x86_64.sh
-  ```
-
-  and follow the install instructions with `~/anaconda3` as the install location (unless you really know what you're doing).
-
-- Linux: similarly:
-
-  ```sh
-  wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
-  sh Anaconda3-2021.05-Linux-x86_64.sh
-  ```
-
-- Windows: Install Anaconda through the GUI, and then I recommend using a linux-like terminal.
+```PYTHON
+black
+flake8
+pytest
+numpy
+click
+rich
+```
 
 ## Install
 
 In a terminal, clone this repo:
 
 ```sh
-git clone git@github.com:benjamindkilleen/cispa.git # or unzip from file.
+
 ```
 
 Then change into the directory, create the Anacoconda environment, and activate it.
