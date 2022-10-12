@@ -1,4 +1,5 @@
 import numpy as np
+from .DataProcess import centralize
 from scipy.linalg import svd
 
 
@@ -19,9 +20,8 @@ def regist_matched_points(X: np.ndarray, Y: np.ndarray):
         Data_Num = np.size(X,1)
 
     # centralization
-    Bar = lambda x : np.repeat(np.reshape(np.mean(x,1),(3,1)),Data_Num,axis=1)
-    X_bar = X - Bar(X)
-    Y_bar= Y - Bar(Y)
+    X_bar, X_mean = centralize(X)
+    Y_bar, Y_mean = centralize(Y)
 
     # Compute Rotation
     H = np.zeros((3,3))
@@ -34,17 +34,12 @@ def regist_matched_points(X: np.ndarray, Y: np.ndarray):
     R = V @ np.diag([1,1,np.linalg.det(V)*np.linalg.det(U_T)]) @ U_T
 
     # Compute translation
-    X_mean = np.reshape(np.mean(X,1),(3,1))
-    Y_mean = np.reshape(np.mean(Y,1),(3,1))
     p = Y_mean - R @ X_mean
 
     # Concatenate F
     F = np.vstack([np.hstack([R,p]),np.array([0,0,0,1])])
     return F
 
-def skew(x):
-    return np.array([[0, -x[2], x[1]],
-                     [x[2], 0, -x[0]],
-                     [-x[1], x[0], 0]])
+
 
 

@@ -2,7 +2,7 @@ from importlib.resources import path
 from pathlib import Path
 from os import getcwd
 from cispa.Registration import regist_matched_points
-from cispa.Preprocess import LoadTxtData
+from cispa.LoadData import LoadTxtData
 from cispa.PivotCalibration import calib_pivot_points
 import numpy as np
 from scipy.spatial.transform import Rotation as ROT
