@@ -1,6 +1,6 @@
-from importlib.resources import path
+import sys,os
+sys.path.append(os.path.dirname(sys.path[0]))
 from pathlib import Path
-from os import getcwd
 from cispa.Registration import regist_matched_points
 from cispa.PivotCalibration import calib_pivot_points
 import cispa.DataProcess as DP
@@ -12,8 +12,8 @@ from numpy.linalg import inv
 
 if __name__ == "__main__":
 
-    data_dir = "PA1 Student Data"
-    output_dir = "output"
+    data_dir = "PA1/PA1 Student Data"
+    output_dir = "PA1/output"
     name = "pa1-debug-a"
 
     data_dir = Path(data_dir).expanduser()
