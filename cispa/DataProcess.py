@@ -20,13 +20,20 @@ def centralize(x):
 
 def homovec(x):
     # return the homogeneous form of vector x
-        if x.shape[0] == 3:
-            return np.vstack((x,np.ones((1,x.shape[1]))))
+    if x.shape[0] == 3:
+        return np.vstack((x,np.ones((1,x.shape[1]))))
         
-        elif x.shape[1] == 3:
-            return np.hstack((x,np.ones((x.shape[0],1))))
+    elif x.shape[1] == 3:
+        return np.hstack((x,np.ones((x.shape[0],1))))
         
-        else:
-            print("Wrong Shape! Please check your input!")
-            return x        
+    else:
+        print("Wrong Shape! Please check your input!")
+        return x        
 
+def dehomovec(x):
+    # pull out the 3x1 vector from a homogeneous set
+    if x.shape[0] == 4: return np.delete(x,3,0)
+    elif x.shape[1] == 4: return np.delete(x,3,1)
+    else:
+        print("Wrong Shape! Please check your input!")
+        return x
