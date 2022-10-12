@@ -1,10 +1,8 @@
-# cispa
+# Programming Assignments for CIS
 
-Template for CIS I programming assignments at Johns Hopkins. [Here](https://ciis.lcsr.jhu.edu/doku.php?id=courses:455-655:455-655) is the course page.
+This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins University
 
-You may need to modify this README to contain the proper urls for your repository.
-
-If you use this template or any of the code within for your project, please cite
+This repository is created and maintained by Jiaming "Jeremy" Zhang and CHongjun Yang. 
 
 ```bibtex
 @misc{benjamindkilleen2022Sep,
