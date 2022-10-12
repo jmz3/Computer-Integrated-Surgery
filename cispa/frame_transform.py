@@ -1,5 +1,5 @@
 from __future__ import annotations
-from selectors import EpollSelector
+# from selectors import EpollSelector
 from typing import Union, overload
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -79,10 +79,18 @@ class FrameTransform:
 
             # Least Square Terms are Ax=b
             A,b = Calc_Coefficient(X_k,Y)
+            print(A.shape)
+            print(b.shape)
             error = np.linalg.lstsq(A,b)
-            if error.norm < some_threshold : break
+
+            F_d = np.hstack(skew(error[0:2]),error[3:5])
+            F_d = np.vstack(F_d,np.array([0,0,0,1]))
+            print(F_d)
+            break
+            F = F_d @ F
+            # if error.norm < some_threshold : break
             
-        R = np.eye(3)
+        R = np.eye(3) + skew(error[1:3])
         p = np.zeros(3)
 
         return cls(R, p)
@@ -96,10 +104,10 @@ def Calc_Coefficient(X: np.ndarray, Y: np.ndarray):
 
     for i in range(np.size(X,1)):
 
-        A_i = np.hstack((skew(-X[:,i]),np.eye(3)))
+        A_i = np.hstack((skew(-X[:2,i]),np.eye(3)))
         A = np.append(A,A_i,0)
 
-        bi = Y[:,i] - X[:,i]
+        bi = Y[2:-1,i] - X[:2,i]
         b = np.append(b,bi,0)
 
     A = np.delete(A,0,0) # remove the first empty row
