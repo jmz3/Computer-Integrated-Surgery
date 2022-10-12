@@ -2,8 +2,8 @@ from importlib.resources import path
 from pathlib import Path
 from os import getcwd
 from cispa.Registration import regist_matched_points
-from cispa.LoadData import LoadTxtData
 from cispa.PivotCalibration import calib_pivot_points
+import cispa.DataProcess as DP
 import numpy as np
 from scipy.spatial.transform import Rotation as ROT
 import logging
@@ -20,10 +20,10 @@ if __name__ == "__main__":
     output_dir = Path(output_dir).expanduser()
 
     cal_body_path = data_dir / f"{name}-calbody.txt"
-    cal_body,calbody_info = LoadTxtData(cal_body_path)
+    cal_body,calbody_info = DP.load_txt_data(cal_body_path)
 
     cal_read_path = data_dir / f"{name}-calreadings.txt"
-    cal_read,cal_read_info = LoadTxtData(cal_read_path)
+    cal_read,cal_read_info = DP.load_txt_data(cal_read_path)
     # log.info(cal_body)
     # log.info(calbody_info)
 

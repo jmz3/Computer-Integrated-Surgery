@@ -1,7 +1,6 @@
 from importlib.resources import path
 from pathlib import Path
 from cispa.Registration import regist_matched_points
-from cispa.LoadData import LoadTxtData
 import cispa.DataProcess as DP
 from cispa.PivotCalibration import calib_pivot_points
 import numpy as np
@@ -20,7 +19,7 @@ if __name__ == "__main__":
     output_dir = Path(output_dir).expanduser()
 
     pivot_path = data_dir / f"{name}-empivot.txt"
-    pivot_data,pivot_info = LoadTxtData(pivot_path)
+    pivot_data,pivot_info = DP.load_txt_data(pivot_path)
 
     Group_Num = int(pivot_info[1])
     Group_Size = int(pivot_info[0])
@@ -45,6 +44,6 @@ if __name__ == "__main__":
         G = pivot_data[Group_Size*i:Group_Size*(i+1),:].T
         F_G.append(regist_matched_points(g,G))
     
-    print(F_G)
+    print(F_G[1])
 
 

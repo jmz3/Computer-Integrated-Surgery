@@ -1,5 +1,11 @@
 import numpy as np
 
+def load_txt_data(file_name):
+    data = np.loadtxt(file_name,skiprows=1,delimiter=',')
+    data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=',')
+    return data,data_info
+
+
 def skew(x):
     return np.array([[0, -x[2], x[1]],
                      [x[2], 0, -x[0]],
