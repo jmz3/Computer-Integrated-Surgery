@@ -1,40 +1,37 @@
+import sys,os
+sys.path.append(os.path.dirname(sys.path[0]))
 from pathlib import Path
 from cispa.Registration import regist_matched_points
-from cispa.PivotCalibration import calib_pivot_points
 import cispa.DataProcess as DP
+from cispa.PivotCalibration import calib_pivot_points
 import numpy as np
-from scipy.spatial.transform import Rotation as ROT
 import logging
+import click
 from rich.logging import RichHandler
 
-if __name__ == "__main__":
+logging.basicConfig(
+    level="DEBUG",
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)],
+)
+log = logging.getLogger(__name__)
 
-    data_dir = "PA1 Student Data"
-    output_dir = "output"
-    name = "pa1-debug-a"
-
+@click.command()
+@click.option("--data-dir", "-d", default="PA1/Data", help="Input data directory")
+@click.option("--output-dir", "-o", default="PA1/output", help="Output directory")
+@click.option("--name", "-n", default="pa1-debug-a", help="Name of the output file")
+def main(data_dir, output_dir, name):
     data_dir = Path(data_dir).expanduser()
     output_dir = Path(output_dir).expanduser()
+    if not output_dir.exists():
+        output_dir.mkdir()
 
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_body,calbody_info = DP.load_txt_data(cal_body_path)
 
     cal_read_path = data_dir / f"{name}-calreadings.txt"
     cal_read,cal_read_info = DP.load_txt_data(cal_read_path)
-    # log.info(cal_body)
-    # log.info(calbody_info)
-
-    if not output_dir.exists():
-        output_dir.mkdir()
-
-    logging.basicConfig(
-        level="DEBUG",
-        format="%(message)s",
-        datefmt="[%X]",
-        handlers=[RichHandler(rich_tracebacks=True)],
-    )
-
-    log = logging.getLogger(__name__)
 
     d = cal_body[0:8,:].T
     D = cal_read[0:8,:].T
@@ -64,6 +61,12 @@ if __name__ == "__main__":
     p_t, p_pivot = calib_pivot_points(F)
 
     log.info(f"Pt = \n{p_t} \nPpivot = \n{p_pivot}")
+
+if __name__ == "__main__":
+    main()
+
+
+
 
 
 
