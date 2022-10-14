@@ -4,7 +4,7 @@
 
 
 
-## Mathematical & Algorithms Implementation
+## I. Mathematics & Algorithms Implementation
 
 This section introduces the mathematical principles and implemented algorithm for the 6 problems in Programming Assignment 1.
 
@@ -14,7 +14,7 @@ The goal is to perform registration and calibration between the sensors, the lay
 
 <a id="Scene"></a>
 
-![Screen Shot 2022-10-13 at 7.26.56 AM](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-13 at 7.26.56 AM.png)
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-13 at 7.26.56 AM.png" alt="Screen Shot 2022-10-13 at 7.26.56 AM" style="zoom:67%;" />
 
 <p align="center"> Figure 1 </p>
 
@@ -47,7 +47,7 @@ A function that computes the homogeneous form of the given transformation frame 
 A 3D point-cloud to point-cloud registration is introduced in this section.
 
 #### 1) Mathematical Method
-Our implementation is refferred to Arun's Method. The paper titled *“Least-Squares Fitting of Two 3-D Point Sets”, published by A. S. Arun, T. S. Huang and S. D. Blostein on 1987,* describes a non-iterative least-squares approach to match two sets of 3D points.
+Our implementation is refferred to Arun's Method [1]. The paper titled “Least-Squares Fitting of Two 3-D Point Sets” describes a non-iterative least-squares approach to match two sets of 3D points.
 
 Suppose we have two point sets and denote them as $P = \{p_i, i \in 0,1,2,...,N\}$ and $P'= \{p_i', i \in 0,1,2,...,N\}$, and they are representing the same rigid body described at different poses. Hence, they should follows: $p_i' \approx Rp_i + t$, hence the error is stated as:
 $$
@@ -96,9 +96,9 @@ A pivot calibration is introduced in this section.
 
 #### 1) Mathematical Method
 
-The pivot calibration problem is shown as Fig [2](), (Image cited from [Ref. 1][1])
+The pivot calibration problem is shown as Fig [2](), (Image cited from [2])
 
-![image-1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/pivot_calibration.png)
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/pivot_calibration.png" alt="image-1" style="zoom:67%;" />
 
 <p align="center">Figure 2</p>
 
@@ -263,31 +263,37 @@ The code is implemented in **"../PA1/pa1_problem6.py"**.
 
 > NOTE: "registration()" is the function "regist_matched_points(X,Y)" introduced in the Subsection [2](#Registration) ; "calibration()" is the function "calib_pivot_points(F)" introduced in the Subsection [3](#Calibration)
 
-## Overall Structure
-
-```bash
-.
-└── PROGRAMS
-    ├── PA1 # Test scripts are contained in this directory
-    │   ├── Data
-    │   ├── output
-    │   ├── pa1_main.py 
-    │   ├── pa1_problem2_test.py
-    │   ├── pa1_problem3_test.py
-    │   ├── pa1_problem4_test.py
-    │   ├── pa1_problem5_test.py
-    │   └── pa1_problem6_test.py 
-    └── cispa # Functions are contained in this directory
-        ├── DataProcess.py 
-        ├── HomoRepresentation.py 
-        ├── LoadData.py # Load data from text file
-        ├── PivotCalibration.py # contains function : calib_pivot_points(F)
-        └── Registration.py # contains function : regist_matched_points(X,Y)
-```
 
 
+<div style="page-break-after: always; break-after: page;"></div>
 
-## Unit Testing and Debugging
+## II. Overall Structure
+
+The overall structure for the ../PROGRAMS folder is described as follows:
+
+└── **PROGRAMS**
+    ├── **PA1**			  # Test scripts are contained in this directory
+    │   ├── **Data**	   # This DIR contains all the provided data
+    │   ├── **output**	# This DIR contains all the result of our program
+    │   ├── **pa1_main.py**				# This is the main process that output the result 
+    │   ├── **pa1_problem2_test.py**	# Unit test for registration
+    │   ├── **pa1_problem3_test.py**	# Unit test for pivot calibration
+    │   ├── **pa1_problem4_test.py**	# Unit test for expected distortion
+    │   ├── **pa1_problem5_test.py**	# Unit test for EM probe calibration
+    │   └── **pa1_problem6_test.py**	# Unit test for Optical probe calibration
+    └── **cispa** 			# Functions are contained in this directory
+        ├── **DataProcess.py** 				# Contains useful functions like skew operation
+        ├── **HomoRepresentation.py** 
+        ├── **LoadData.py**					# Load data from text file
+        ├── **PivotCalibration.py**		 # Contains function : calib_pivot_points(F)
+        └── **Registration.py**				# Contains function : regist_matched_points(X,Y)
+
+
+
+
+
+
+## III. Unit Testing and Debugging
 
 **NOTE**: Please change your directory to the ${PROGRAMS} directory before you start the unit test. In our case, the command is:
 
@@ -314,7 +320,25 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem2_test.py". This 
 
 It will load "/Data/pa1-debug-a-calbody.txt" data and apply an artificial rigid transformation $F$ to the imported point set $A$ , so the transformed point set $B=FA$. 
 
-The script will first import the **regist_matched_points(A,B)** function and get a registration result $F_{regist}$ and then compare the registration result $F_{register}$ with the original $F$ and print them out to the terminal.
+The script will first import the **regist_matched_points(A,B)** function and get a registration result $F_{regist}$ and then compare the registration result $F_{register}$ with the original $F$ and print them out to the terminal. The result of our test case is:
+
+```bash
+../PROGRAMS $ python PA1/pa1_problem2_test.py -d PA1/Data  
+[11:09:26] DEBUG    Suppose we apply a transformation                                 
+                    R = [[-1.0000000e+00 -1.2246468e-16  0.0000000e+00]                                      
+                     [ 1.2246468e-16 -1.0000000e+00  0.0000000e+00]                                          
+                     [ 0.0000000e+00  0.0000000e+00  1.0000000e+00]]                                         
+                    p=[[10.]                                                                                 
+                     [10.]                                                                                   
+                     [10.]]                                                                                  
+           DEBUG    The registered transformation                                     
+                    R = [[-1.0000000e+00 -1.2126596e-16  0.0000000e+00]                                      
+                     [ 1.2126596e-16 -1.0000000e+00  0.0000000e+00]                                          
+                     [ 0.0000000e+00  0.0000000e+00  1.0000000e+00]]                                         
+                    p=[10. 10. 10.]                                                                          
+           INFO     Registered rotation matrix is correct                             
+           INFO     Registered translation vector is correct                          
+```
 
 
 
@@ -328,7 +352,26 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem3_test.py". This 
 
 It will load "/Data/pa1-debug-a-empivot.txt" data and assume an imaginary probe with a certain $\{p_{tip},p_{pivot}\}$. For a sequence of rotations $R = \{R_i\}$ derived from the data, its corresponding translations $P=\{p_i\}$ can be found by $p_i = p_{pivot}-R_ip_{tip}$ . Combine $R$ and $P$, we will "made" a sequence of homogeneous transformation $F$ . 
 
-The script will first import the **calib_pivot_points(F)** function and get a calibration result $\{p_{tip}^{cal},p_{pivot}^{cal}\}$ ; and then compare the calibration result with the original $\{p_{tip},p_{pivot}\}$ and print them out to the terminal.
+The script will first import the **calib_pivot_points(F)** function and get a calibration result $\{p_{tip}^{cal},p_{pivot}^{cal}\}$ ; and then compare the calibration result with the original $\{p_{tip},p_{pivot}\}$ and print them out to the terminal. The result of our test case is:
+
+```bash
+../PROGRAMS $ python PA1/pa1_problem3_test.py -d PA1/Data
+[11:12:10] DEBUG    Suppose we have a probe                                           
+                    p_t = [[ 1. ]                                                                 
+                     [ 0.5]                                                                       
+                     [-2. ]]                                                                      
+                    p_pivot=[[ 9.8]                                                               
+                     [10.2]                                                                       
+                     [ 3.4]]                                                                      
+           DEBUG    The calibration result                                            
+                    p_t = [[ 1. ]                                                                 
+                     [ 0.5]                                                                       
+                     [-2. ]]                                                                      
+                    p_pivot=[[ 9.8]                                                               
+                     [10.2]                                                                       
+                     [ 3.4]]                                                                      
+           INFO     Calibration result is correct!                                    
+```
 
 
 
@@ -340,6 +383,14 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem4_test.py". This 
 ../PROGRAMS $ python PA1/pa1_problem4_test.py
 ```
 
+The result is compared with the "pa1-debug-a-output1.txt" and shown in the table below.
+
+<p align="center"> TABLE 1: pa1_problem4_test.py result for <u>pa1-debug</u> data</p>
+
+|      |   OUR RESULT |  GIVEN RESULT    |
+| :----: | :----: | :----: |
+|   $\vec C_i^{expected}$   | (208.53810  208.11373  208.77357)<br/>(206.48697  211.65187  333.70665)<br/>(204.43583  215.19000  458.63973)<br/>... | (209.02,   209.18,   209.56)<br/>(209.60,   205.60,   334.51)<br/>(210.17,   202.01,   459.45)<br/>... |
+
 
 
 ### 4. Problem4 Debug
@@ -350,6 +401,14 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem5_test.py". This 
 ../PROGRAMS $ python PA1/pa1_problem5_test.py
 ```
 
+The result is compared with the "pa1-debug-a-output1.txt" and shown in the table below.
+
+<p align="center"> TABLE 2: pa1_problem5_test.py result for <u>pa1-debug</u> data</p>
+
+|      |   OUR RESULT |  GIVEN RESULT    |
+| :----: | :----: | :----: |
+|$\vec p_{dimple}^{OP}$ | (403.49890  405.26775  208.63184) | (403.50,   405.27,   208.63) |
+
 
 
 ### 5.Problem5 Debug
@@ -359,10 +418,19 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem6_test.py". This 
 ```bash
 ../PROGRAMS $ python PA1/pa1_problem6_test.py
 ```
+The result is compared with the "pa1-debug-a-output1.txt" and shown in the table below.
+
+<p align="center"> TABLE 3: pa1_problem6_test.py result for <u>pa1-debug</u> data</p>
+
+|      |   OUR RESULT |  GIVEN RESULT    |
+| :----: | :----: | :----: |
+|$\vec p_{dimple}^{EM}$ | (200.02611  199.51553  195.06558) | (200.02,   199.52,   195.07) |
+
+
 
 ### 6. Discussion for the results
 
-<p align="center">Table 1: 2-Norm of the debug datasets</p>
+<p align="center">Table 4: 2-Norm of the debug datasets</p>
 
 | DataSet |   $C_i^{expected}$   | $p_{dimple}^{EM}$ | $p_{dimple}^{OP} $|
 | :-------: | :----: | :---: |:---:|
@@ -374,14 +442,26 @@ In the ../PROGRAMS directory, run test script "/PA1/pa1_problem6_test.py". This 
 | f       | 1.5998 | 0.5632 | 0.0062 |
 | g       | 1.5747 | 0.3029 | 0.0068 |
 
-In this assignment, we adopt 2-Norm to evaluate the implemented programs. Since the final outputs of these modules are position vectors in 3D Euclidean space, it is reasonable and intuitive that Euclidean Distance between predictions and ground-truths can serve as error and evaluate the performance. Driven by this, we compute the average 2-Norm for all the output position vectors in each case.
+In this assignment, we adopt 2-Norm to evaluate the implemented programs. And the results are shown in the TABLE 4. Since the final outputs of these modules are position vectors in 3D Euclidean space, it is reasonable and intuitive that Euclidean Distance between predictions and ground-truths can serve as error and evaluate the performance. Driven by this, we compute the average 2-Norm for all the output position vectors in each case.
 
-Datasets e,f,g are somehow noisy and the expected error is greater than a,b,c.
+Datasets e,f,g are somehow noisy and the expected error is greater than a,b,c. The pivot calibration on dimple is 
 
 
-## Result Tabulars
 
-<p align="center">Table 2: result for unknown data</p>
+## IV. Result Tabulars
+
+Perform similar steps for Group h to Group k by running the command in terminal
+
+```bash
+$ python PA1/pa1_main.py -n pa1-unknown-h
+$ python PA1/pa1_main.py -n pa1-unknown-i
+$ python PA1/pa1_main.py -n pa1-unknown-j
+$ python PA1/pa1_main.py -n pa1-unknown-k
+```
+
+The results for calibrated probe position relative to EM tracker system $\vec p^{EM}$ and $\vec p^{OP}$are shown in the TABLE 5. 
+
+<p align="center">Table 5: result for unknown data</p>
 
 |   DataSet   |   $p^{EM}$   |  $p^{OP}$    |
 | :----: | :----: | :----: |
@@ -392,13 +472,14 @@ Datasets e,f,g are somehow noisy and the expected error is greater than a,b,c.
 
 
 
-### Contributions:
+## Contributions
 
-Jiaming Zhang developped problem 1,2,3,4 ; Chongjun Yang developped problem 5,6 of this PA.
+Jiaming Zhang developed problem 1,2,3,4 ; Chongjun Yang developed problem 5,6 of this PA. Both team member complete a part of this report.
 
 
 
-### References
+## References
 
-[1]: [Pivot Calibration Diagram](https://cas-assignment.readthedocs.io/en/latest/assignment.toolcalibration.html)	
+[1] K. S. Arun, T. S. Huang and S. D. Blostein, "Least Squares Fitting of Two 3D Point Sets", in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol.PAMI-9, no.5
 
+[2] https://cas-assignment.readthedocs.io/en/latest/assignment.toolcalibration.html

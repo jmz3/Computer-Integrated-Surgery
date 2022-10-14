@@ -38,7 +38,7 @@ def main(data_dir, output_dir, name):
     opt_pivot_path = data_dir / f"{name}-optpivot.txt"
     opt_pivot_data,opt_pivot_info = DP.load_txt_data(opt_pivot_path)
 
-    output_path = output_dir / f"{name}-output.txt"
+    output_path = output_dir / f"{name}-output-ownresult.txt"
 
 
     """
@@ -46,6 +46,7 @@ def main(data_dir, output_dir, name):
     """
     ND = int(cal_body_info[0])
     NA = int(cal_body_info[1])
+    NC = int(cal_body_info[2])
     # Register about EM Trackers
     d = cal_body[0:ND,:].T
     D = cal_read[0:ND,:].T
@@ -110,7 +111,13 @@ def main(data_dir, output_dir, name):
     Output
     """
 
+    Title = np.array([[f'{NC}',f'{NFrames}',f"{name}-output-ownresult.txt"]],dtype=str)
     Output = np.vstack((p_pivot_EM.reshape((1,3)),p_pivot_op.reshape((1,3))))
-    Output = np.vstack((Output,C_expected.T))
+    Output = np.vstack((Output,C_expected[0:3,:].T))
 
-    np.savetxt('test.out', Output, delimiter=' ')   # X is an array
+    with open(output_path,"w") as f:
+        np.savetxt(f, Title, delimiter=', ',fmt='%s')
+        np.savetxt(f, Output, delimiter=' ', fmt='%10.5f')
+
+if __name__ == "__main__":
+    main()
