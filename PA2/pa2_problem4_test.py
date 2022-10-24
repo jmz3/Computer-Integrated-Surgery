@@ -50,6 +50,10 @@ def main(data_dir, output_dir, name):
     cal_read_path = data_dir / f"{name}-calreadings.txt"
     output_path = output_dir / f"{name}-bernstein-coeff.txt"
 
+
+
+
+
     ###########################################################################
     ########### The process is the same as PA2/pa2_problem3_test.py ###########
     ###########################################################################
@@ -76,6 +80,10 @@ def main(data_dir, output_dir, name):
     
     p_t, p_pivot = calib_pivot_points(F_G)
 
+
+
+
+
     ###########################################################################
     ######## Now find the p_pivot at frame k based on given point set #########
     ###########################################################################
@@ -84,6 +92,9 @@ def main(data_dir, output_dir, name):
     em_fiducial_data,em_fiducial_info = DP.load_txt_data(em_fiducial_path)
     NG = int(em_fiducial_info[0])
     NFrames = int(em_fiducial_info[1])
+
+    # correct the distortion
+    em_fiducial_corrected = CorrectDistortion.predict(em_fiducial_data, correction_coeff)
 
 
 
