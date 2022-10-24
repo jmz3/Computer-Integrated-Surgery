@@ -5,6 +5,11 @@ def load_txt_data(file_name):
     data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=',')
     return data,data_info
 
+def save_txt_data(output_path, Title, Output):
+    with open(output_path,"w") as f:
+        np.savetxt(f, Title, delimiter=', ',fmt='%s')
+        np.savetxt(f, Output, delimiter=' ', fmt='%10.5f')
+
 
 def skew(x):
     return np.array([[0, -x[2], x[1]],

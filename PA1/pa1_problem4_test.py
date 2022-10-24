@@ -56,7 +56,7 @@ def main(data_dir, output_dir, name):
     c = np.vstack((c,np.ones((1,np.size(c,axis=1)))))
     C_expected = inv(F_d) @ F_a @ c
     
-    log.info(f"Result is found!\nc_e = {C_expected[0:3,:]}")
+    log.info(f"Result is found!\nc_expected = \n{C_expected[0:3,:].T}")
     # cal_test = [F,F,F]
     # p_t, p_post = calib_pivot_points(cal_test)
 
