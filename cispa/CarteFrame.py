@@ -1,17 +1,19 @@
 from __future__ import annotations
-from logging import WARNING
 import numpy as np
 
 
 class CarteFrame(object):
     def __init__(self, R=np.eye(3), p=np.zeros((3, 1))) -> None:
         # Check demensionality of p
-        if p.shape[0] == 3:
+        if p.shape == (3,1):
             pass
-        elif p.shape[1] == 3:
+        elif p.shape == (1,3):
             p = p.T
         else:
-            print("Wrong size for input position vector.")
+            try:
+                p = p.reshape((3,1))
+            except:
+                raise Exception("Wrong size for input position vector.")
 
         self.R = R
         self.p = p
@@ -19,12 +21,13 @@ class CarteFrame(object):
     def __matmul__(self, other: np.ndarray):
         if isinstance(other, np.ndarray):
             # if the input is a 3x1 position vector
-            if other.shape[0] == 3 & other.shape[1] == 1:
+            if other.shape == (3, 1):
                 p = self.p + self.R @ other
+
                 return p
 
             # if the input is a 1x3 vector        
-            elif other.shape[0] == 1 & other.shape[1] == 3:
+            elif other.shape[0] == (1, 3):
                 other = other.T
                 p = self.p + self.R @ other
                 return p

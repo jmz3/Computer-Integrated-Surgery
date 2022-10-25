@@ -169,5 +169,6 @@ if __name__=="__main__":
     x = np.asarray(np.math.factorial(i),np.float32)/np.math.factorial(order)
     y = comb(order,i)
     print(np.asarray(np.math.factorial(i),np.float32))
+    print(np.linspace(1,100,4))
     print(x)
     print(y)

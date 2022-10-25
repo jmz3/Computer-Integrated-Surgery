@@ -14,17 +14,12 @@ from cispa.CarteFrame import CarteFrame
 
 '''
 Problem Description:
-Using the distortion correction and the improved pivot value, 
-compute the locations of the fiducials points 
-w.r.t. the EM tracker base coordinate system
+Compute the registration frame Freg
 
 steps taken:
-1.  Same steps as in PA2/pa2_problem3_test.py
-2.  Get EM-fiducial point cloud and correct the distortion
-3.  Perform point cloud registration between EM-fiducial points and gmean
-    gmean is the average point for G[0] in the pivot calibration process
-4.  Find the p_pivot for every frame of EM-fiducial points according to the formula:
-    p_fiducial = F*p_tip + gmean
+1. Same steps as in PA2/pa2_problem4_test.py
+2. Compute the registration frame Freg through registration
+3. The registrated tranformation Freg is defined as: bj = Freg*Bi
 '''
 
 logging.basicConfig(
@@ -50,10 +45,6 @@ def main(data_dir, output_dir, name):
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_read_path = data_dir / f"{name}-calreadings.txt"
     output_path = output_dir / f"{name}-bernstein-coeff.txt"
-
-
-
-
 
     ###########################################################################
     ########### The process is the same as PA2/pa2_problem3_test.py ###########
@@ -105,12 +96,22 @@ def main(data_dir, output_dir, name):
         F_G = regist_matched_points(g,G)
         F_Gk = CarteFrame(F_G[0:3,0:3], F_G[0:3,3])
         p_fiducial.append(F_Gk @ p_t + g_mean)
+    
+    b = np.array(p_fiducial, dtype=np.float64, order='C').reshape(-1,3)
+    b = b.T
 
-    # print the fiducial points w.r.t. the EM tracker base coordinate system
-    log.info(f"Fiducial points w.r.t. \
-        the EM tracker base coordinate system:\n")
-    for k in range(NFrames):
-        log.info(f"Fiducial {k+1}:\n{p_fiducial[k]}")
+    ###########################################################################
+    ##################### Register between Bj and bj ##########################
+    ###########################################################################
+    ct_fiducial_path = data_dir / f"{name}-ct-fiducials.txt"
+    ct_fiducial_data,ct_fiducial_info = DP.load_txt_data(ct_fiducial_path)
+    NB = int(ct_fiducial_info[0])
+
+    Freg = regist_matched_points(ct_fiducial_data.T, b)
+    
+    # print the result
+    log.info(f"The transformation between EM and CT is\n {Freg}")
+
 
 if __name__=="__main__":
     main()
