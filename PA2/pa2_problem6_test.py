@@ -14,12 +14,17 @@ from cispa.CarteFrame import CarteFrame
 
 '''
 Problem Description:
-Compute the registration frame Freg
+Apply the distortion correction to all the subsequent values of [G1, ... , Gn]
+Compute the pointer tip coordinates w.r.t. the tracker base
+And apply Freg to compute the tip location w.r.t. the CT image.
+
 
 steps taken:
-1. Same steps as in PA2/pa2_problem4_test.py
-2. Compute the registration frame Freg through registration
-3. The registrated tranformation Freg is defined as: bj = Freg*Bi
+1. Same steps as in PA2/pa2_problem5_test.py
+2. Apply the distortion correction to the point cloud in EM_nav
+3. Register the point cloud in EM_nav to the point cloud in em_pivot to find the registration frame Fem
+4. Derive the position of the pointer tip in the CT frame through p_pivot = Fem * p_tip p_ct = Freg * p_pivot 
+5. In general, the probe point position in CT C.S. can be determined through p_ct = Freg * Fem * p_tip
 '''
 
 logging.basicConfig(
@@ -47,7 +52,7 @@ def main(data_dir, output_dir, name):
     output_path = output_dir / f"{name}-bernstein-coeff.txt"
 
     ###########################################################################
-    ########### The process is the same as PA2/pa2_problem3_test.py ###########
+    ########### The process is the same as PA2/pa2_problem5_test.py ###########
     ###########################################################################
     # Correct the distortion
     c_expected, c_readings = ComputeExpectValue.C_expected(cal_body_path,cal_read_path)
@@ -72,13 +77,6 @@ def main(data_dir, output_dir, name):
     
     p_t, p_pivot = calib_pivot_points(F_G)
 
-
-
-
-
-    ###########################################################################
-    ######## Now find the p_pivot at frame k based on given point set #########
-    ###########################################################################
     # load the given point set: EM fiducial points
     em_fiducial_path = data_dir / f"{name}-em-fiducialss.txt"
     em_fiducial_data,em_fiducial_info = DP.load_txt_data(em_fiducial_path)
@@ -95,22 +93,38 @@ def main(data_dir, output_dir, name):
         G = em_fiducial_corrected[NG*k:NG*(k+1),:].T
         F_G = regist_matched_points(g,G)
         F_Gk = CarteFrame(F_G[0:3,0:3], F_G[0:3,3])
-        p_fiducial.append(F_Gk @ p_t + g_mean)
+        p_fiducial.append(F_Gk @ p_t)
     
     b = np.array(p_fiducial, dtype=np.float64, order='C').reshape(-1,3)
     b = b.T
 
-    ###########################################################################
-    ##################### Register between Bj and bj ##########################
-    ###########################################################################
     ct_fiducial_path = data_dir / f"{name}-ct-fiducials.txt"
     ct_fiducial_data,ct_fiducial_info = DP.load_txt_data(ct_fiducial_path)
     NB = int(ct_fiducial_info[0])
 
     Freg = regist_matched_points(ct_fiducial_data.T, b)
     
-    # print the result
-    log.info(f"The transformation between EM and CT is\n {Freg}")
+
+    ###########################################################################
+    ################### Locate the Probe w.r.t. CT image ######################
+    ###########################################################################
+    # load the given point set: EM NAV points
+    em_nav_path = data_dir / f"{name}-EM-nav.txt"
+    em_nav_data,em_nav_info = DP.load_txt_data(em_nav_path)
+    NG = int(em_nav_info[0])
+    NFrames = int(em_nav_info[1])
+
+    # correct the distortion
+    em_nav_corrected = CorrectDistortion.predict(em_nav_data, correction_coeff)
+    p_ct = []
+    for k in range(NFrames):
+        G = em_nav_corrected[ NG * k : NG * ( k + 1 ) , : ].T
+        Fem = regist_matched_points( g , G )
+        F = np.linalg.inv(Freg) @ Fem
+        Fk = CarteFrame(F[0:3,0:3], F[0:3,3])
+        p_ct.append( Fk @ p_t )
+
+    log.info(f"p_ct = {p_ct}")
 
 
 if __name__=="__main__":

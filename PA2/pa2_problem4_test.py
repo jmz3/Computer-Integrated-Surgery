@@ -80,6 +80,7 @@ def main(data_dir, output_dir, name):
         F_G.append(regist_matched_points(g,G))
     
     p_t, p_pivot = calib_pivot_points(F_G)
+    log.info(f"p_pivot: {p_pivot}")
 
 
 
@@ -104,7 +105,7 @@ def main(data_dir, output_dir, name):
         G = em_fiducial_corrected[NG*k:NG*(k+1),:].T
         F_G = regist_matched_points(g,G)
         F_Gk = CarteFrame(F_G[0:3,0:3], F_G[0:3,3])
-        p_fiducial.append(F_Gk @ p_t + g_mean)
+        p_fiducial.append(F_Gk @ p_t)
 
     # print the fiducial points w.r.t. the EM tracker base coordinate system
     log.info(f"Fiducial points w.r.t. \

@@ -46,8 +46,9 @@ def main(data_dir, output_dir, name):
     cal_read_path = data_dir / f"{name}-calreadings.txt"
     output_path = output_dir / f"{name}-bernstein-coeff.txt"
 
+
     ###########################################################################
-    ########### The process is the same as PA2/pa2_problem3_test.py ###########
+    ########### The process is the same as PA2/pa2_problem4_test.py ###########
     ###########################################################################
     # Correct the distortion
     c_expected, c_readings = ComputeExpectValue.C_expected(cal_body_path,cal_read_path)
@@ -74,8 +75,6 @@ def main(data_dir, output_dir, name):
 
 
 
-
-
     ###########################################################################
     ######## Now find the p_pivot at frame k based on given point set #########
     ###########################################################################
@@ -95,10 +94,11 @@ def main(data_dir, output_dir, name):
         G = em_fiducial_corrected[NG*k:NG*(k+1),:].T
         F_G = regist_matched_points(g,G)
         F_Gk = CarteFrame(F_G[0:3,0:3], F_G[0:3,3])
-        p_fiducial.append(F_Gk @ p_t + g_mean)
+        p_fiducial.append(F_Gk @ p_t)
     
     b = np.array(p_fiducial, dtype=np.float64, order='C').reshape(-1,3)
     b = b.T
+
 
     ###########################################################################
     ##################### Register between Bj and bj ##########################
