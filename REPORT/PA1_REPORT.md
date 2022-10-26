@@ -1,6 +1,6 @@
 <h1 align="center">PA1-REPORT</h1>
 
-<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-12 at 1.51.10 PM.png" alt="Screen Shot 2022-10-12 at 1.51.10 PM" style="zoom:275%;" />
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-25 at 9.07.17 PM.png" alt="Screen Shot 2022-10-25 at 9.07.17 PM" style="zoom:275%;" />
 
 
 
@@ -14,7 +14,7 @@ The goal is to perform registration and calibration between the sensors, the lay
 
 <a id="Scene"></a>
 
-<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-13 at 7.26.56 AM.png" alt="Screen Shot 2022-10-13 at 7.26.56 AM" style="zoom:67%;" />
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-25 at 9.15.03 PM.png" alt="Screen Shot 2022-10-25 at 9.15.03 PM" style="zoom:67%;" />
 
 <p align="center"> Figure 1 </p>
 
@@ -98,7 +98,7 @@ A pivot calibration is introduced in this section.
 
 The pivot calibration problem is shown as Fig [2](), (Image cited from [2])
 
-<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgrammingAssignment/REPORT/PA1_REPORT.assets/pivot_calibration.png" alt="image-1" style="zoom:67%;" />
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA1_REPORT.assets/Screen Shot 2022-10-25 at 9.10.13 PM.png" alt="Screen Shot 2022-10-25 at 9.10.13 PM" style="zoom:67%;" />
 
 <p align="center">Figure 2</p>
 
