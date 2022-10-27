@@ -134,7 +134,7 @@ def main(data_dir, output_dir, name):
         result_path = data_dir / f"{name}-output2.txt"
         result_data,result_info = DP.load_txt_data(result_path)
         log.info(f"debug data = \n{result_data}")
-        log.info(f"Total error = {np.linalg.norm(np.linalg.norm(p_ct - result_data, axis=1))}")
+        log.info(f"Total error = {np.mean(np.linalg.norm(p_ct - result_data, axis=1))}")
 
     # save the result
     output_path = output_dir / f"{name}-own-output2.txt"

@@ -307,7 +307,27 @@ The code is implemented in **"../PA2/pa2_problem6_test.py"**. Note the EM-relate
 | **STEP5:**  | Compute the probe tip position w.r.t EM tracker frame and transfer it to CT frame |
 | **RETURN:** | probe tip position w.r.t. CT coordinate system $\vec b_i$    |
 
+
+
 ## II. Overall Structure
+
+**PROGRAMS**
+**├── PA2**
+**│   ├── pa2_problem1_test.py**
+**│   ├── pa2_problem2_test.py**
+**│   ├── pa2_problem3_test.py**
+**│   ├── pa2_problem4_test.py**
+**│   ├── pa2_problem5_test.py**
+**│   └── pa2_problem6_test.py**
+**└── cispa**
+    **├── CarteFrame.py**
+    **├── ComputeExpectValue.py**
+    **├── CorrectDistortion.py**
+    **├── DataProcess.py**
+    **├── HomoRepresentation.py**
+    **├── LoadData.py**
+    **├── PivotCalibration.py**
+    **└──Registration.py**
 
 
 
@@ -454,15 +474,77 @@ Here we automatically run the pa2-debug-a data. And use the nav result from CT t
 
 ### 1. Results for debug data
 
-By running the "/PA2/pa2_problem6_test.py" on the debug datasets, we get the $c^{expected}$ and 
+According to the requirements of PA2, all the inputs are depending on the output of the previous steps. Therefore, we integrate all the ourput command in the last script because it contains all the computed data in the previous sections. By running the "/PA2/pa2_problem6_test.py" on the debug datasets, we get the $c^{expected}$ , $p_{pivot}$ and $b_i$ values. Since all the result are represented in 3D Euclidean space, evaluation can be done through computing the 2-Norm of the difference between the given output dataset and our result. The averaged 2-Norm error for debug data is shown in the following table [1]():
 
-| DataSet | $C_i^{expected}$ | $p_{dimple}^{EM}$ | $p_{dimple}^{OP} $ |
-| :-----: | :--------------: | :---------------: | :----------------: |
-|    a    |      0.0048      |      0.0037       |       0.0075       |
-|    b    |      0.2424      |      0.0018       |       0.0060       |
-|    c    |      0.3449      |      0.5538       |       0.0059       |
-|    d    |      0.0100      |      0.0068       |       0.0058       |
-|    e    |      1.5046      |      0.3100       |       0.0100       |
-|    f    |      1.5998      |      0.5632       |       0.0062       |
-|    g    |      1.5747      |      0.3029       |       0.0068       |
+<p align="center">Table 1: 2-Norm Average Error of the debug datasets</p>
+
+| DataSet | $c^{expected}$ error | pivot error | nav error |
+| :-----: | :------------------: | :---------: | :-------: |
+| debug-a |        0.0048        |   0.0037    |  0.0052   |
+| debug-b |        0.8524        |   0.1824    |  0.0249   |
+| debug-c |        0.8349        |   0.4538    |  1.2514   |
+| debug-d |        0.0190        |   0.0068    |  0.0058   |
+| debug-e |        3.5046        |   1.6100    |  3.1573   |
+| debug-f |        2.8998        |   1.5632    |  2.9556   |
+
+Note: there may be several points in a set of data, the average error is the mean value of the errors.
+
+As we can see, dataset a,b and d have relatively acceptable result, whereas c,e and f are not satisfying. According to the data description table [2](), we can tell that a and b are accurate because there is neither distortion nor noise added to the EM tracker. For dataset d, although there are jiggles in Optical tracker, the effect is minimized since we put our trust on the optical tracker. This shows that the frame transformation process, point cloud to cloud registration process and pivot calibration process does not introduce significant numerical errors.
+
+<p align="center">Table 2: datasets description</p>
+
+![Screen Shot 2022-10-27 at 10.40.14 AM](/Users/jeremy/Desktop/Screen Shot 2022-10-27 at 10.40.14 AM.png)
+
+**For dataset c,** we compare distortion correction process by activating and deactivating the  distortion correction function before our calculation. The result is shown in Table [3]().
+
+ <p align="center">Table 3: Comparison w/ & w/o distortion correction for Dataset c</p>
+
+|   Condition    | $c^{expected}$ error | pivot error | nav error |
+| :------------: | :------------------: | :---------: | :-------: |
+| w/ correction  |        0.8349        |   0.4538    |  1.2514   |
+| w/o correction |        0.8349        |   1.9251    |  2.4717   |
+
+According to Table 2 and 3, since c is only affected by the EM distortion, applying distortion correction to c can significantly cut down the locating error for the probe tip.
+
+**For dataset e and f,** they are influenced by multiple factors, including distortion, noise and jiggle. Their results are notably deviates from the ct-fiducial data. That is because distortion correction process is not designed to handle noises like gaussian noise, and we put our 100% trust on the Optical Tracker, which is actually not accurate. To increase the performance of our program for these dataset, we need to design a filter to minimize the noises.
+
+### 2. Results for unknown data
+
+ <p align="center">Table 4: Summary of the results obtained for unknown data</p>
+
+| Dataset | unknown-g | unknown-h |
+| :-------------: | :-------------------: | :---:|
+|        computed nav position w.r.t. CT frame        | $\begin{pmatrix}117.27067 & 58.52045 & 103.88564\\                   123.45676 & 75.69881 & 46.72874 \\                93.62863 & 111.70676 & 79.97079  \\              154.17953 & 94.30602 & 164.29503 \end{pmatrix}$ | $\begin{pmatrix}168.51942 & 158.01081  & 94.85515\\                                        105.58285 & 171.16691 & 79.84215 \\ 166.12348 & 97.56852 & 105.07524 \\ 83.95943 & 40.91918 & 165.31318 \end{pmatrix}$ |
+
+
+
+| Dataset | unknown-i | unknown-j |
+| :-------------: | :-------------------: | :---:|
+| computed nav position w.r.t. CT frame | $\begin{pmatrix}156.01086 &  99.78590 & 65.95048\\                                        47.71990 & 157.12693 & 86.48202 \\ 76.81600 & 143.14118 & 77.42546\\ 81.23779 & 149.08950 &  117.19522 \end{pmatrix}$ | $\begin{pmatrix}43.77457 & 114.05976 &  25.39603\\                                        52.68414 & 152.76296 & 174.56554 \\ 88.87453 & 45.94154 &  73.15525 \\ 76.71254 & 157.55091 & 122.99498 \end{pmatrix}$ |
+
+
+
+### 3. Discussions
+
+#### 1) Probable reason for error in debug-b
+
+We find that case b only adds EM noise without EM distortion. In the distortion correction step, the noise will be regarded as the distortion which will cause an incorrect interpolation function fit. This may explains the reason why the pivot error is more significant than the nav error for dataset debug-b.
+
+#### 2) Scale to Box Observation
+
+Scale here is not normalization. The scale operation happens to every dimension of the point independently. And when you try to find the fitting function using Bernstein Polynomials, the ground truth and the distorted data both have to be scaled. Afterwards, when you try to find the dewraped data through the fitted coefficients, it will be in the scaled range. You have to scale back to its original range based on the min and max values for the input distorted data. This is based on an insight that distortion barely changes the range of the data.
+
+
+
+## V. Contributions
+
+Jiaming Zhang developed the distortion calibration, navigation and Freg computation parts of this assignment. Chongjin Yang developed the EM pivot calibration, expected C computation and navigation parts. Both team members complete a part of this report.
+
+
+
+## VI. References
+
+[1] Jiaming Zhang, Chongjun Yang. PA1-REPORT
+
+[2] https://en.wikipedia.org/wiki/Bernstein_polynomial
 
