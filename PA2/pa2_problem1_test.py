@@ -1,10 +1,12 @@
 import sys,os
 sys.path.append(os.path.dirname(sys.path[0]))
+from cispa.DataProcess import load_txt_data
 from pathlib import Path
 import logging
 import click
 from rich.logging import RichHandler
-from cispa import ComputeExpectValue
+from cispa.ComputeExpectValue import C_expected
+import numpy as np
 
 '''
 Problem Description:
@@ -40,13 +42,23 @@ def main(data_dir, output_dir, name):
     
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_read_path = data_dir / f"{name}-calreadings.txt"
-    output_path = output_dir / f"{name}-bernstein-coeff.txt"
+    result_path = data_dir / f"{name}-output1.txt"
 
-    c_expected, c_readings = ComputeExpectValue.C_expected(cal_body_path,cal_read_path)
-    print(c_expected[1].T)
-    # print(len(c_readings))
+    c_expected, c_readings = C_expected(cal_body_path,cal_read_path)
+    result_data, result_info = load_txt_data(result_path)
 
+    Nframes = int(result_info[1])
+    Nmarkers = int(result_info[0])
+    result = []
+    for k in range(Nframes):
+        result.append(result_data[k*Nmarkers+2:(k+1)*Nmarkers+2,:])
 
+    sum_error = 0
+    for i in range(len(c_expected)):
+        sum_error += np.linalg.norm(c_expected[i].T - result[i])
+
+    log.info(f"Average error between expect c and output c is {sum_error/len(c_expected)/len(c_expected[0])}")
+    # print(c_expected[0].T)
 
 if __name__=="__main__":
     main()

@@ -88,9 +88,6 @@ def main(data_dir, output_dir, name):
     p_t, p_pivot = calib_pivot_points(F_G)
     log.info(f"Pt = \n{p_t} \nPpivot = \n{p_pivot}")
 
-
-
-
     
 
 if __name__=="__main__":

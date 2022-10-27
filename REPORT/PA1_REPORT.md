@@ -188,7 +188,7 @@ Because the reference frame is unspecified for the calibration post, we have to 
 $$
 g_i[k] = G_i[k] - \frac 1 {N_G} \sum_i ^{N_G} G_i[k]
 $$
-Since the local reference frame is rigidly connected to the calibration probe. $g_i[k]$ remains the same when k varies. Hence $g_i[0]$ will be taken as the local reference frame to perform pivot calibration.
+By centralize the point cloud at k=0, the $g_i[0]$ **will be automatically "moved" to the origin of the EM tracker coordinate system**. Since the local reference frame is rigidly connected to the calibration probe. $g_i[k]$ remains the same when k varies. Hence $g_i[0]$ will be taken as the local reference frame to perform pivot calibration.
 
 Now, we gain two representations for one point set w.r.t. local and tracker coordinate system. The transformation from tracker coordinate system to calibration probe coordinate system can be therefore computed as:
 $$

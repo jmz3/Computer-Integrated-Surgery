@@ -102,7 +102,7 @@ def main(data_dir, output_dir, name):
     ct_fiducial_data,ct_fiducial_info = DP.load_txt_data(ct_fiducial_path)
     NB = int(ct_fiducial_info[0])
 
-    Freg = regist_matched_points(ct_fiducial_data.T, b)
+    Freg = regist_matched_points(b, ct_fiducial_data.T)
     
 
     ###########################################################################
@@ -120,11 +120,19 @@ def main(data_dir, output_dir, name):
     for k in range(NFrames):
         G = em_nav_corrected[ NG * k : NG * ( k + 1 ) , : ].T
         Fem = regist_matched_points( g , G )
-        F = np.linalg.inv(Freg) @ Fem
+        F = Freg @ Fem
         Fk = CarteFrame(F[0:3,0:3], F[0:3,3])
         p_ct.append( Fk @ p_t )
 
-    log.info(f"p_ct = {p_ct}")
+    p_ct = np.array(p_ct, dtype=np.float64, order='C').reshape(-1,3)
+    log.info(f"p_ct = \n{p_ct}")
+
+    
+    # load the output2 data to compare
+    result_path = data_dir / f"{name}-output2.txt"
+    result_data,result_info = DP.load_txt_data(result_path)
+    log.info(f"debug data = \n{result_data}")
+    log.info(f"Total error = {np.linalg.norm(np.linalg.norm(p_ct - result_data, axis=1))}")
 
 
 if __name__=="__main__":

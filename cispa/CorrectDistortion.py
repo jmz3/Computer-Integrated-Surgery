@@ -26,7 +26,7 @@ def Scale2Box(q, ReturnBound=False):
         # print(i)
         for j in range(point_dim):
             qs[j,i] = (q[j,i] - min[j]) / (max[j]-min[j])
-        
+
         assert np.max(qs[:,i]) <=1 and np.min(qs[:,i]) >= 0
 
     if ReturnBound == False:

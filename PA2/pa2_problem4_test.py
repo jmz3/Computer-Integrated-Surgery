@@ -80,7 +80,7 @@ def main(data_dir, output_dir, name):
         F_G.append(regist_matched_points(g,G))
     
     p_t, p_pivot = calib_pivot_points(F_G)
-    log.info(f"p_pivot: {p_pivot}")
+    log.info(f"p_pivot: \n{p_pivot}")
 
 
 

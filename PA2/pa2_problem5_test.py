@@ -107,7 +107,7 @@ def main(data_dir, output_dir, name):
     ct_fiducial_data,ct_fiducial_info = DP.load_txt_data(ct_fiducial_path)
     NB = int(ct_fiducial_info[0])
 
-    Freg = regist_matched_points(ct_fiducial_data.T, b)
+    Freg = regist_matched_points(b,ct_fiducial_data.T)
     
     # print the result
     log.info(f"The transformation between EM and CT is\n {Freg}")
