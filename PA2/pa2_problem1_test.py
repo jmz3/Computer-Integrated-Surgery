@@ -1,6 +1,7 @@
 import sys,os
 sys.path.append(os.path.dirname(sys.path[0]))
 from cispa.DataProcess import load_txt_data
+from cispa.DataProcess import save_txt_data
 from pathlib import Path
 import logging
 import click
@@ -43,6 +44,7 @@ def main(data_dir, output_dir, name):
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_read_path = data_dir / f"{name}-calreadings.txt"
     result_path = data_dir / f"{name}-output1.txt"
+    output_path = output_dir / f"{name}-own-output1.txt"
 
     c_expected, c_readings = C_expected(cal_body_path,cal_read_path)
     result_data, result_info = load_txt_data(result_path)
@@ -59,6 +61,11 @@ def main(data_dir, output_dir, name):
 
     log.info(f"Average error between expect c and output c is {sum_error/len(c_expected)/len(c_expected[0])}")
     # print(c_expected[0].T)
+
+    # save the result to a txt file
+    Title = np.array([[f'{Nmarkers}',f'{Nframes}',f"{name}-output1-ownresult.txt"]],dtype=str)
+    OutputData = np.array(c_expected, dtype=np.float64, order='C').reshape(-1,3)
+    save_txt_data(output_path, Title, OutputData)
 
 if __name__=="__main__":
     main()

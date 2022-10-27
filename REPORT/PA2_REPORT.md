@@ -452,5 +452,17 @@ Here we automatically run the pa2-debug-a data. And use the nav result from CT t
 
 ## IV. Results and Discussions
 
+### 1. Results for debug data
 
+By running the "/PA2/pa2_problem6_test.py" on the debug datasets, we get the $c^{expected}$ and 
+
+| DataSet | $C_i^{expected}$ | $p_{dimple}^{EM}$ | $p_{dimple}^{OP} $ |
+| :-----: | :--------------: | :---------------: | :----------------: |
+|    a    |      0.0048      |      0.0037       |       0.0075       |
+|    b    |      0.2424      |      0.0018       |       0.0060       |
+|    c    |      0.3449      |      0.5538       |       0.0059       |
+|    d    |      0.0100      |      0.0068       |       0.0058       |
+|    e    |      1.5046      |      0.3100       |       0.0100       |
+|    f    |      1.5998      |      0.5632       |       0.0062       |
+|    g    |      1.5747      |      0.3029       |       0.0068       |
 

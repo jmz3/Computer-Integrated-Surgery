@@ -44,7 +44,8 @@ def main(data_dir, output_dir, name):
     
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_read_path = data_dir / f"{name}-calreadings.txt"
-    output_path = output_dir / f"{name}-bernstein-coeff.txt"
+    result_path = data_dir / f"{name}-output1.txt"
+    output_path = output_dir / f"{name}-own-output1.txt"
 
 
 
@@ -53,7 +54,10 @@ def main(data_dir, output_dir, name):
     ###########################################################################
     # find expected EM marker position w.r.t EM Tracker Coordinate System
     c_expected, c_readings = ComputeExpectValue.C_expected(cal_body_path,cal_read_path)
-    
+    Nmarkers = 27
+    Nframes = 125
+    Title = np.array([[f'{Nmarkers}',f'{Nframes}',f"{name}-output1-ownresult.txt"]],dtype=str)
+    OutputData = np.array(c_expected, dtype=np.float64, order='C').reshape(-1,3)
     # Here c_expected and c_readings are a list of (NCx3) matrix
     # We need to expand them into a big matrix, 
     # i.e. extract every position vector and stack them vertically
@@ -87,7 +91,8 @@ def main(data_dir, output_dir, name):
     
     p_t, p_pivot = calib_pivot_points(F_G)
     log.info(f"Pt = \n{p_t} \nPpivot = \n{p_pivot}")
-
+    OutputData = np.concatenate((p_t.T,p_pivot.T,OutputData),axis=0)
+    DP.save_txt_data(output_path, Title, OutputData)
     
 
 if __name__=="__main__":

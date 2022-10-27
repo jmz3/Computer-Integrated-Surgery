@@ -49,7 +49,8 @@ def main(data_dir, output_dir, name):
     
     cal_body_path = data_dir / f"{name}-calbody.txt"
     cal_read_path = data_dir / f"{name}-calreadings.txt"
-    output_path = output_dir / f"{name}-bernstein-coeff.txt"
+    output1_path = output_dir / f"{name}-output1.txt"
+    output2_path = output_dir / f"{name}-output2.txt"
 
     ###########################################################################
     ########### The process is the same as PA2/pa2_problem5_test.py ###########
@@ -129,11 +130,17 @@ def main(data_dir, output_dir, name):
 
     
     # load the output2 data to compare
-    result_path = data_dir / f"{name}-output2.txt"
-    result_data,result_info = DP.load_txt_data(result_path)
-    log.info(f"debug data = \n{result_data}")
-    log.info(f"Total error = {np.linalg.norm(np.linalg.norm(p_ct - result_data, axis=1))}")
+    if 'debug' in name:
+        result_path = data_dir / f"{name}-output2.txt"
+        result_data,result_info = DP.load_txt_data(result_path)
+        log.info(f"debug data = \n{result_data}")
+        log.info(f"Total error = {np.linalg.norm(np.linalg.norm(p_ct - result_data, axis=1))}")
 
+    # save the result
+    output_path = output_dir / f"{name}-own-output2.txt"
+    Title = Title = np.array([[f'{NFrames}',f"{name}-own-output2.txt"]],dtype=str)
+    Output = p_ct
+    DP.save_txt_data(output_path,Title,Output)
 
 if __name__=="__main__":
     main()
