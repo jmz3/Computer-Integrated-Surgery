@@ -444,7 +444,7 @@ The result is compared with the "pa1-debug-a-output1.txt" and shown in the table
 
 In this assignment, we adopt 2-Norm to evaluate the implemented programs. And the results are shown in the TABLE 4. Since the final outputs of these modules are position vectors in 3D Euclidean space, it is reasonable and intuitive that Euclidean Distance between predictions and ground-truths can serve as error and evaluate the performance. Driven by this, we compute the average 2-Norm for all the output position vectors in each case.
 
-Datasets e,f,g are somehow noisy and the expected error is greater than a,b,c. The pivot calibration on dimple is 
+Datasets e,f,g are somehow noisy and the expected error is greater than a,b,c. The pivot calibration on dimple for EM tracking system is much noisier than the calibration result derived from Optical tracking system.
 
 
 

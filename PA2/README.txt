@@ -16,7 +16,7 @@ PROGRAMS/PA2/pa2_problem5_test.py                   #Compute the transformation 
 PROGRAMS/PA2/pa2_problem6_test.py                   #Include all the steps above and compute the tip position w.r.t. CT frame
 PROGRAMS/PA2/Data                                   #Data 
 
-***************************************USING INSTRUCTION******************************************
+***************************************** USING INSTRUCTION **********************************************
 REQUIREMENTS:
 
 This code requires Python 3.9, NumPy and scipy,
@@ -24,19 +24,25 @@ To install NumPy, run: pip install numpy
 To install scipy, run: pip install scipy
 
 How to run our code:
-First you need to enter the target directory. For example, in my case: 
+First you need to enter the target directory, i.e.
+$ cd ~/*PARENT DIR*/PROGRAMS
 
 The Options for every test executables are loaded by:
-    --data-dir, -d, default="PA2/Data", help="Input data directory"
-    --output-dir, -o, default="PA2/output", help="Output directory"
-    --name, -n, default="pa2-debug-a", help="Name of the output file"
+    --data-dir, -d,     default="PA2/Data"      Specify the input data directory
+    --output-dir, -o,   default="PA2/output"    Specify the output directory"
+    --name, -n,         default="pa2-debug-a"   Specify the Name of the output file
 
-For running the whole pipeline (calibration and navigation), run pa2_problem6_test with options:
+******************************************* Examples ***************************************************
+For running the whole pipeline (calibration and navigation), run pa2_problem6_test.py with options:
 For running the -debug-e- case：
 >>> python3 pa2_problem6_test.py -n pa2-debug-e
+Note: Running pa2_problem6_test.py will automatically save the navigation result to "*-output2.txt"
 
 For running the -unknown-h- case：
 >>> python3  pa2_problem6_test.py -n pa2-unknown-h
 
 For saving the output1 data
 >>> python3 pa2_problem3_test.py -n pa2-debug-a
+
+For testing the distortion correction function with our own data:
+>>> python3 PA2/pa2_problem2_test.py
