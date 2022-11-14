@@ -27,7 +27,7 @@ class CarteFrame(object):
                 return p
 
             # if the input is a 1x3 vector        
-            elif other.shape[0] == (1, 3):
+            elif other.shape == (1, 3):
                 other = other.T
                 p = self.p + self.R @ other
                 return p
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     p = np.array([0,0,1])
     F = CarteFrame(R,p)
     F1 = F@F
-
+    print(F.R)
     F.inverse()
     print(F.R)
     print(F.p)

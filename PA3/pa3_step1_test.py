@@ -1,6 +1,7 @@
 import sys,os
 sys.path.append(os.path.dirname(sys.path[0]))
 from pathlib import Path
+from cispa.CarteFrame import CarteFrame
 from cispa.Registration import regist_matched_points
 import cispa.DataProcess as DP
 from cispa.PivotCalibration import calib_pivot_points
@@ -56,7 +57,6 @@ def main(data_dir, output_dir, name):
     rigidbody_A_body = rigidbody_A[ 0 : Nmarkers , : ]
     rigidbody_A_tip = rigidbody_A[ Nmarkers : , : ]
     rigidbody_B_body = rigidbody_B[ 0 : Nmarkers , : ]
-    rigidbody_B_tip = rigidbody_B[ Nmarkers : , : ]
 
     # Input the tracker readings here
     readings_path = data_dir / f"{name}-SampleReadingsTest.txt"
@@ -64,15 +64,25 @@ def main(data_dir, output_dir, name):
 
     Nframes = int(readings_info[1])
     NS = int(readings_info[0])
-    ND = NS - 2 * Nmarkers
-
+    print(rigidbody_A_tip.shape)
     # Extract the readings for A and B body
-    readings_A_body = []
-    readings_B_body = []
+    # Perform registration on the readings
+    d_tip = []
     for i in range(Nframes):
-        readings_A_body.append( readings[ i * NS : i * NS + Nmarkers, : ])
-        readings_B_body.append(readings[ i * NS + Nmarkers : i * NS + 2 * Nmarkers, : ])
+        readings_A_body = readings[ i * NS : i * NS + Nmarkers, : ]
+        F_A = regist_matched_points(rigidbody_A_body, readings_A_body)
+        F_Ak = CarteFrame(F_A[0:3,0:3], F_A[0:3,3])
 
+        readings_B_body = readings[ i * NS + Nmarkers : i * NS + 2 * Nmarkers, : ]
+        F_B = regist_matched_points(rigidbody_B_body, readings_B_body)
+        F_Bk = CarteFrame(F_B[0:3,0:3], F_B[0:3,3])
+
+        # Compute pointer tip w.r.t B body
+        F_Bk.inverse()
+        d_tip.append(F_Bk @ F_Ak @ rigidbody_A_tip)
+
+    d_tip = np.concatenate(d_tip, axis = 1)
+    print(d_tip.shape)
     
 
 
