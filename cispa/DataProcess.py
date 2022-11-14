@@ -5,6 +5,12 @@ def load_txt_data(file_name):
     data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=',')
     return data,data_info
 
+def load_txt_data_with_space(file_name):
+    data = np.loadtxt(file_name,skiprows=1,dtype=str)
+    data = data.astype(np.float)
+    data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=' ')
+    return data,data_info
+
 def save_txt_data(output_path, Title, Output):
     with open(output_path,"w") as f:
         np.savetxt(f, Title, delimiter=', ',fmt='%s')

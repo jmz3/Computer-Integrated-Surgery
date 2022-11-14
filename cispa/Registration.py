@@ -5,6 +5,9 @@ from scipy.linalg import svd
 
 def regist_matched_points(X: np.ndarray, Y: np.ndarray):
 
+    """
+    Find the transformation matrix F that satisfies FX = Y
+    """
     # type check and reshape the input data as:
     # [[x1 x2 x3 ...]
     #  [y1 y2 y2 ...]
