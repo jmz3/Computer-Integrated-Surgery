@@ -12,9 +12,12 @@ def load_txt_data_with_space(file_name):
     return data,data_info
 
 def load_mesh_data(file_name):
-    data = np.loadtxt(file_name,skiprows=1,delimiter=',')
-    data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=',')
-    return data,data_info
+    Nvertex = int(np.loadtxt(file_name,max_rows=1,delimiter=','))
+    vertex = np.loadtxt(file_name,skiprows=1,max_rows=Nvertex,delimiter=' ')
+    
+    Nfaces = int(np.loadtxt(file_name,skiprows=Nvertex+1,max_rows=1,delimiter=','))
+    face_idx = np.loadtxt(file_name,skiprows=Nvertex+2,max_rows=Nfaces,delimiter=' ')
+    return Nvertex, vertex, Nfaces, face_idx
 
 def save_txt_data(output_path, Title, Output):
     with open(output_path,"w") as f:
