@@ -46,7 +46,7 @@ According to the notes in class,  the closest point $\vec C_{k,i}$would be calcu
 1. For the system as shown in Fig. 1. the function keeps right as follows
 
 $$
-\vec a-\vec p\approxλ(\vec q-\vec p)+µ(\vec r-\vec p)
+\vec a-\vec p\approx \lambda (\vec q-\vec p)+ \mu (\vec r-\vec p)
 $$
 
 The above functions could be rewritten as a Least Squares form as follows:
@@ -59,10 +59,10 @@ Hence, by solving the Least Squares question, λ and µ could be obtained.
 2. According to the  geometric relationship in Fig.1, the function could be written as follows.
 
 $$
-\vec c=\vec p+λ(\vec q-\vec p)+µ(\vec r-\vec p)
+\vec c=\vec p+ \lambda (\vec q-\vec p)+\mu (\vec r-\vec p)
 $$
 
-If $λ\geq0,µ\geq0,λ+µ\leq1$, then $\vec c$ locates within the triangle and become the closest point. Otherwise,  we have to find a point on the border of the triangle. Here we define $\vec c^{*}$ as the project of $\vec c$  on the border of the triangle and as the closest point.  We could calculate  $\vec c^{*}$ according to Fig.2. and Fig.3.
+If $\lambda\geq0,\mu\geq0,\lambda+\mu\leq1$, then $\vec c$ locates within the triangle and become the closest point. Otherwise,  we have to find a point on the border of the triangle. Here we define $\vec c^{*}$ as the project of $\vec c$  on the border of the triangle and as the closest point.  We could calculate  $\vec c^{*}$ according to Fig.2. and Fig.3.
 
 3. For each $\vec d_k$,  the closest point of each triangle mesh could be found according to  the above steps, here we get the point set{$\vec C_{k,i}$}.
 
@@ -134,13 +134,13 @@ $$
 $$
 (3) Then the sphere center $\vec q$ lies along the line
 $$
-\vec q=\vec f+λ\vec d
+\vec q=\vec f+\lambda\vec d
 $$
 with $(λ\vec d-\vec v)^2\leq(λ\vec d-\vec u)^2$. We could simplified as follows:
 $$
 λ\geq\frac{\vec v^2-\vec u^2}{2d(\vec v-\vec u)}=γ
 $$
-If$γ\leq0$ , then just pick $λ\leq0$. Otherwise, pick $λ=γ$.
+If$\gamma\leq0$ , then just pick $\lambda\leq0$. Otherwise, pick $\lambda=\gamma$.
 
 2. Simple Search with Bounding Bpheres, the pseudo code of the algrithom is shown in Fg. 5. as follows.
 
@@ -280,6 +280,8 @@ Table 1 shows us  a quantitative evaluation of various proposed methods to find 
 closest points. For both the Debug and Unknown cases, we compared the running time of the four methods to demonstrate the efficiency improvement.
 
 In Table 2 , 'BoundSp' denoting the Bounding Sphere Search demonstrates the highest  speed in computing the paired points. Except for the KDtree, all the advanced methods improved the computation efficiency comparing with the naive Brutal search. Because a KDtree pipeline has to find all the closest points on single triangle mesh beforehand, the method has to repeat this step and thus  requires about 0.7s in this dataset when dealing with each point of the point cloud and efficiency has been degraded largely.  Secondly, compared with the Brutal Search, though the Octree Search has largely reduced running time, Bounding Sphere Search still performs better than the Octree Search Method. This could be caused by the performance in the implementation of python. During the process of the tree construction, there would be a series of calling and assignment operations for List type limiting the efficiency of Octree.
+
+
 
 **Table 1**: Quantitative evaluation of the proposed methods' accuracy.  All the  methods come to same accuracy. The error has been computed in  <u>L2 Norm</u>
 

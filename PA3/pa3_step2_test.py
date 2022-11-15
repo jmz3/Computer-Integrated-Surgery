@@ -46,9 +46,11 @@ def main(data_dir, output_dir, name):
     output_path = output_dir / f"{name}-own-output1.txt"
 
     Nvertex, vertex, Nface, face_idx = DP.load_mesh_data(mesh_path)
-
-    
-
+    face_idx = face_idx[:, :3]
+    vertex_idx = face_idx[0,:].astype(int) # type conversion to int
+    vertex_idx = vertex_idx - 1 # subtract 1 to make it 0-indexed
+    triangle = vertex[vertex_idx,:]
+    print(triangle)
 
 if __name__ == "__main__":
     main()
