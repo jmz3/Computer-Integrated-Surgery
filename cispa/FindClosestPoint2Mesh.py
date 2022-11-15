@@ -21,7 +21,7 @@ class FindClosestPoint2Mesh:
         self.Nf = Nfaces
         self.face_idx = face_idx
 
-    def BruteForceSolve(self, a):
+    def BruteForceSolver(self, a):
         """
         Find the closest point on the mesh to the given point P.
         Param:
@@ -34,16 +34,18 @@ class FindClosestPoint2Mesh:
             P_closest: 3x1 numpy array, the closest point on the mesh to P
         """
         # Size check
-        if a.shape != (3,1):
-            raise ValueError("Input must be a 3x1 numpy array")
+        if a.size != 3:
+            raise ValueError("Input must be a (3,) numpy array")
     
+        a.reshape(3)
         min_dist = np.inf  # Initialize the minimum distance to infinity
         for i in range(self.Nf):
             # Get the vertices of the triangle from the face index
             # p q r should be 3x1 numpy array
-            p = self.vertex[self.face_idx[i, 0], :].T
-            q = self.vertex[self.face_idx[i, 1], :].T
-            r = self.vertex[self.face_idx[i, 2], :].T
+            p = self.vertex[self.face_idx[i, 0], :].reshape(3)
+            q = self.vertex[self.face_idx[i, 1], :].reshape(3)
+            r = self.vertex[self.face_idx[i, 2], :].reshape(3)
+
             # Find the closest point on the triangle to the given point
             h = self.FindClosestPoint2Triangle(a, p, q, r)
             # Update the minimum distance
@@ -62,7 +64,7 @@ class FindClosestPoint2Mesh:
         else:
             raise ValueError("A and B must be a 3x2 and 3x1 numpy array, Please check the input dimension")
 
-        h = p + lam * (q - p) + mu * (r - p)
+        h = (p + lam * (q - p) + mu * (r - p)).reshape(3)
 
         if lam < 0:
             h = self.ProjectOnSegment(h, r, p)
@@ -71,9 +73,9 @@ class FindClosestPoint2Mesh:
         elif lam + mu > 1:
             h = self.ProjectOnSegment(h, q, r)
 
-        return h.reshape(3, 1)
+        return h.reshape(3)
     
-    def ProjectOnSegment(c,p,q):
+    def ProjectOnSegment(self,c,p,q):
         """
         Project the point c on the line segment pq if c is out of the triangle
         Param:
@@ -85,12 +87,12 @@ class FindClosestPoint2Mesh:
         ---------------------------------------------------------------------------
             c_star: 3x1 numpy array, the projected point
         """
-        if c.size == 3: # Sanity check: Input must be a 3x1 numpy array
+        if c.shape == (3,) and p.shape == (3,) and q.shape == (3,): # Sanity check: Input must be a 3x1 numpy array
             lam = np.inner(c-p,q-p)/np.inner(q-p,q-p)
     
         else :
             raise ValueError("Input must be a numpy array with 3 elements")
-    
+        
         lam = max(0,min(1,lam))
         return p + lam * (q-p) # return the projected point
 
@@ -98,3 +100,5 @@ class FindClosestPoint2Mesh:
 if __name__ == "__main__":
     P = np.array([1, 0, 0.25])
     Q = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
+
+    print(np.inner(P.reshape(3),P.reshape(3)))
