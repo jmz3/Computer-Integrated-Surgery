@@ -12,9 +12,9 @@ def FindClosestPoint2Triangle(a, vertices):
     ---------------------------------------------------------------------------
         P_closest: 3x1 numpy array, the closest point on the mesh to P
     """
-    p = vertices[0,:]
-    q = vertices[1,:]
-    r = vertices[2,:]
+    p = vertices[:,0]
+    q = vertices[:,1]
+    r = vertices[:,2]
 
     A = np.concatenate([(q-p).reshape(3,1),(r-p).reshape(3,1)], axis=1)
     B = (a - p).reshape(3,1)
@@ -57,6 +57,5 @@ def ProjectOnSegment(c,p,q):
 if __name__=="__main__":
     P = np.array([1, 0, 0.25])
     Q = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
-    diff = Q[1,:] - Q[2,:]
-    A = FindClosestPoint2Triangle(P, Q)
+    A = FindClosestPoint2Triangle(P, Q.T)
     print(A)
