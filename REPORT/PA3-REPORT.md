@@ -68,7 +68,7 @@ If $\lambda\geq0,\mu\geq0,\lambda+\mu\leq1$, then $\vec c$ locates within the tr
 
 #### 2) Code Implementation
 
-The code implemented in **"/PA3/pa3_.py"**.
+The code implemented in **"/cispa/FindClosestPoint2Triangle.py"**.
 
 ```bash
 
@@ -223,8 +223,8 @@ The overall structure for the ../PROGRAMS folder is described as follows:
     ├── **PA3**			  # Test scripts are contained in this directory
     │   ├── **Data**	   # This DIR contains all the provided data
     │   ├── **output**	# This DIR contains all the result of our program
-    │   ├── **pa3_main.py**				# This is the main process that output the result 
-    │   ├── **pa3_problem5_test.py**	# Unit test for EM probe calibration
+    │   ├── **pa3_main.py**			 # This is the main process that output the result 
+    │   ├── **pa3_step1_test.py**	# Unit test for EM probe calibration
     │   └── **pa3_problem6_test.py**	# Unit test for Optical probe calibration
     └── **cispa** 			# Functions are contained in this directory
         ├── **DataProcess.py** 				# Contains useful functions like skew operation
