@@ -2,8 +2,6 @@ import numpy as np
 from scipy.linalg import lstsq
 from typing import List, Tuple
 
-
-
 def calib_pivot_points( frames: List[np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray]:
 
