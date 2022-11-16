@@ -95,10 +95,46 @@ class FindClosestPoint2Mesh:
         
         lam = max(0,min(1,lam))
         return p + lam * (q-p) # return the projected point
+    
+    def FindBoundingSphereForMesh(self):
+        """
+        Find the bounding sphere of the mesh
+        Param:
+        ---------------------------------------------------------------------------
+            self: a Mesh object that contains the vertices and faces index of the mesh
+        Return:
+        ---------------------------------------------------------------------------
+            center: 3x1 numpy array, the center of the bounding sphere
+            radius: float, the radius of the bounding sphere
+        """
+        # Initialize the bounding sphere
+
+
+        return nSphere
+    
+    def OctreeSolver(self, a):
+        """
+        Find the closest point on the mesh to the given point P using Octree
+        Param:
+        ---------------------------------------------------------------------------
+            point: 3x1 numpy array, the point we use to find the closest point on the mesh
+            self: a Mesh object that contains the vertices and faces index of the mesh
+
+        Return:
+        ---------------------------------------------------------------------------
+            P_closest: 3x1 numpy array, the closest point on the mesh to P
+        """
+        # Size check
+        if a.size != 3:
+            raise ValueError("Input must be a (3,) numpy array")
+    
+        
 
 
 if __name__ == "__main__":
     P = np.array([1, 0, 0.25])
     Q = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
 
-    print(np.inner(P.reshape(3),P.reshape(3)))
+    # print(np.inner(P.reshape(3),P.reshape(3)))
+    c_ = FindClosestPoint2Mesh(Q, 1, np.array([[0, 1, 2]]))
+    print(c_.BoundingSphere(np.array([0, 1, 2])))
