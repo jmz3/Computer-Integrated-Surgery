@@ -1,4 +1,5 @@
 import numpy as np
+import FindBoundingSphere as fbs
 
 
 class FindClosestPoint2Mesh:
@@ -20,6 +21,9 @@ class FindClosestPoint2Mesh:
         self.vertex = vertex
         self.Nf = Nfaces
         self.face_idx = face_idx
+        self.sphere_list = self.FindBoundingSphereForMesh()
+        self.sub_tree = [[[[] for i in range(2)] for j in range(2)] for k in range(2)]
+        self.centroid_point = np.zeros(3)
 
     def BruteForceSolver(self, a):
         """
@@ -53,7 +57,7 @@ class FindClosestPoint2Mesh:
                 min_dist = np.linalg.norm(h-a)
                 P_closest = h
 
-        return P_closest
+        return P_closest, min_dist
 
     def FindClosestPoint2Triangle(self, a, p, q, r):
         A = np.concatenate([(q-p).reshape(3, 1), (r-p).reshape(3, 1)], axis=1)
@@ -108,9 +112,22 @@ class FindClosestPoint2Mesh:
             radius: float, the radius of the bounding sphere
         """
         # Initialize the bounding sphere
+        SphereList = []
+        for triangle_idx in range(self.Nf):
+            # Get the vertices of the triangle from the face index
+            # the vertices are stacked as row vectors i.e. 
+            # [px py pz 
+            # qx qy qz 
+            # rx ry rz]
+            vertex = self.vertex[self.face_idx[triangle_idx, :], :]
 
-
-        return nSphere
+            # Find the bounding sphere of the triangle
+            sphere_ = fbs.Sphere(vertex,triangle_idx)
+            SphereList.append(sphere_)
+            # print(sphere.center)
+            # print(sphere.radius)
+            # print(vertex)
+        return SphereList
     
     def OctreeSolver(self, a):
         """
@@ -127,14 +144,144 @@ class FindClosestPoint2Mesh:
         # Size check
         if a.size != 3:
             raise ValueError("Input must be a (3,) numpy array")
-    
         
+        HaveSubTree = False
+        nsphere = len(self.sphere_list)
+        
+        max_radius = self.FindMaxRadius()
+        
+    def Centroid(self):
+        """
+        Find the centroid of the SphereList
+        Param:
+        ---------------------------------------------------------------------------
+            None
+        Return:
+        ---------------------------------------------------------------------------
+            centroid: 3x1 numpy array, the centroid of the centers of the bounding spheres
+        """
+        if len(self.sphere_list) == 0:
+            return None
 
+        for S in self.sphere_list:
+            self.centroid_point += S.center
+        return self.centroid_point/len(self.sphere_list)
+    
+    def FindMaxCoordinate(self):
+        """
+        Find the maximum coordinate of the SphereList
+        Param:
+        ---------------------------------------------------------------------------
+            None
+        Return:
+        ---------------------------------------------------------------------------
+            UB: Upper Bound of all the spheres UB = [x_max, y_max, z_max]
+        """
+        if len(self.sphere_list) == 0:
+            return None
+
+        UBs = np.vstack([S.center + S.radius for S in self.sphere_list])
+        UB = np.max(UBs, axis=0)
+        return UB
+    
+    def FindMinCoordinate(self):
+        """
+        Find the minimum coordinate of the SphereList
+        Param:
+        ---------------------------------------------------------------------------
+            None
+        Return:
+        ---------------------------------------------------------------------------
+            LB: Lower bound of all the spheres LB = [x_min, y_min, z_min]
+        """
+        if len(self.sphere_list) == 0:
+            return None
+
+        LBs = np.vstack([S.center - S.radius for S in self.sphere_list])
+        LB = np.min(LBs, axis=0)
+        return LB
+    
+    def FindMaxRadius(self):
+        """
+        Find the maximum radius of the SphereList
+        Param:
+        ---------------------------------------------------------------------------
+            None
+        Return:
+        ---------------------------------------------------------------------------
+            max_radius: float, the maximum radius of the bounding spheres
+        """
+        if len(self.sphere_list) == 0:
+            return None
+
+        max_radius = 0
+        for S in self.sphere_list:
+            if S.radius > max_radius:
+                max_radius = S.radius
+        return max_radius
+    
+    def SplitSort(self, split_point):
+        """
+        Split the SphereList into 8 sublists
+        Param:
+        ---------------------------------------------------------------------------
+            split_point: (3,) numpy array, the center of all the bounding spheres
+        Return:
+        ---------------------------------------------------------------------------
+            Modify the sub_tree to store the divided sphere_list
+        """
+        if len(self.sphere_list) == 0 or len(self.sphere_list) == 1:
+            raise ValueError("SphereList must have more than 1 element to get a splited space")
+        
+        for S in self.sphere_list:
+            i = 1 if split_point[0] < S.center[0] else 0
+            j = 1 if split_point[1] < S.center[1] else 0
+            k = 1 if split_point[2] < S.center[2] else 0
+            self.sub_tree[i][j][k].append(S)
+        
+    def ConstructSubTree(self):
+        """
+        Construct the sub_tree of the octree
+        Param:
+        ---------------------------------------------------------------------------
+            None
+        Return:
+        ---------------------------------------------------------------------------
+            None
+        """
+        # Stop Critiria:
+        if len(self.sphere_list) < 2 and np.norm(self.LB - self.UB) < 2*self.max_radius:
+            HaveSubtree = False
+            return
+        HaveSubtree = True
+        
+        # Find the split point
+        split_point = self.Centroid()
+        self.SplitSort(split_point)
+        
+        # Split the sphere_list
+        self.SplitSort(split_point)
+        
+        # Construct the sub_tree
+        for i in range(2):
+            for j in range(2):
+                for k in range(2):
+                    self.sub_tree[i][j][k] = Octree(self.sub_tree[i][j][k])
+   
 
 if __name__ == "__main__":
     P = np.array([1, 0, 0.25])
-    Q = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
+    Q = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0],[1,1,0],[-1,0,0]])
 
     # print(np.inner(P.reshape(3),P.reshape(3)))
-    c_ = FindClosestPoint2Mesh(Q, 1, np.array([[0, 1, 2]]))
-    print(c_.BoundingSphere(np.array([0, 1, 2])))
+    c_ = FindClosestPoint2Mesh(Q, 3, np.array([[0, 1, 2],[1,2,3],[0,2,4]]))
+    c_.FindBoundingSphereForMesh()
+    print(c_.Centroid())
+    p1 = np.array([2.0,-1.0,0.0])
+    print(np.max([p1,P],axis=0))
+    SubSpheres = [[[[] for i in range(2)] for j in range(2)] for k in range(2)]
+    print(len(SubSpheres[:][1]))
+
+    x = 1 < 3
+    print(x)
+    # print(c_.BoundingSphere(np.array([0, 1, 2])))

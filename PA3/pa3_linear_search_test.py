@@ -52,13 +52,14 @@ def main(data_dir, output_dir, name):
 
     Nvertex, vertex, Nface, face_idx = DP.load_mesh_data(mesh_path)
     face_idx = face_idx[:, :3].astype(int) # type conversion to int
-    face_idx = face_idx - 1 # index starts from 0
+    face_idx = face_idx # index starts from 0
 
     Closest2Mesh_ = FindClosestPoint2Mesh(vertex, Nface, face_idx) # initialize an object of FindClosestPoint2Mesh
     point = np.array([20.0,-30.0,0.0]).reshape(3)
-    closest_point = Closest2Mesh_.BruteForceSolver(point)
+    closest_point, min_dist = Closest2Mesh_.BruteForceSolver(point)
 
     print(closest_point)
+    print(min_dist)
     # plot the closest point
     
     fig = plt.figure(figsize=(10,10))

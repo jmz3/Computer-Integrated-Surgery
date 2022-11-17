@@ -7,6 +7,10 @@ class Sphere(object):
         Param:
         ---------------------------------------------------------------------------
             vertices: 3x3 numpy array, the vertices of the mesh
+            the vertices are stacked as row vectors i.e. 
+            [px py pz 
+             qx qy qz 
+             rx ry rz]
             face_idx: int, the index of the face_idx
         """
         self.vertices = vertices
@@ -26,9 +30,9 @@ class Sphere(object):
             radius: float, the radius of the bounding sphere
         """
         # Find the longest edge of the triangle
-        p = vertices[0:3, :].reshape(3)
-        q = vertices[0:3, :].reshape(3)
-        r = vertices[0:3, :].reshape(3)
+        p = vertices[0, :].reshape(3)
+        q = vertices[1, :].reshape(3)
+        r = vertices[2, :].reshape(3)
         edge_1 = np.linalg.norm(q-p)
         edge_2 = np.linalg.norm(r-q)
         edge_3 = np.linalg.norm(p-r)
@@ -59,18 +63,3 @@ class Sphere(object):
         radius = np.linalg.norm(center - p)
         return center, radius
     
-    def FindBoundingSphereForMesh(self):
-        """
-        Find the bounding sphere of the mesh
-        Param:
-        ---------------------------------------------------------------------------
-            self: a Mesh object that contains the vertices and faces index of the mesh
-        Return:
-        ---------------------------------------------------------------------------
-            center: 3x1 numpy array, the center of the bounding sphere
-            radius: float, the radius of the bounding sphere
-        """
-        # Initialize the bounding sphere
-
-
-        return nSphere
