@@ -216,7 +216,8 @@ The overall structure for the ../PROGRAMS folder is described as follows:
     │   ├── **output**	# This DIR contains all the result of our program
     │   ├── **pa3_main.py**				# This is the main process that output the result 
     │   ├── **pa3_compute_dk_test.py**	  # compute the sample points input file
-    │   ├── **pa3_step2_test.py**
+    │   ├── **pa3_find_closest_on_triangle.py** 
+    │   ├── **pa3_octree_search_test.py**
     │   └── **pa3_linear_search_test.py**	 # Linear search test to find closest point on mesh
     └── **cispa** 			# Functions are contained in this directory
         ├── **CarteFrame.py** 				#
@@ -227,6 +228,7 @@ The overall structure for the ../PROGRAMS folder is described as follows:
         ├── **FindClosestPoint2Mesh.py**	   #  Find the closest point on the triangle to the given point P.
         ├── **FindClosestPoint2Triangle.py**  # Find the closest point on the triangle to the given point P.
         ├── **HomoRepresentation.py**    	#
+        ├── **Octree.py**
         ├── **PivotCalibration.py**		 # Contains function : calib_pivot_points(F)
         └── **Registration.py**				# Contains function : regist_matched_points(X,Y)
 
@@ -247,7 +249,7 @@ PA3   cispa
 
 ### 1. Verification for Compute dk Test
 
-This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_step1_test.py". In the terminal, run the following command:
+This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_compute_dk_test.py". In the terminal, run the following command:
 
 ```bash
 
@@ -299,12 +301,11 @@ In Table 2 , 'BoundSp' denoting the Bounding Sphere Search demonstrates the high
 
 **Table 2**:  Comparison of various methods in running time for Debug case A-F
 
-|  Method  | Running time(s) |      |      |      |      |
-| :------: | --------------- | ---- | ---- | ---- | ---- |
-|          | A               | B    | C    | D    | E    |
-|  Brutal  |                 |      |      |      |      |
-| BoundSp* |                 |      |      |      |      |
-|  Octree  |                 |      |      |      |      |
+|       Method        | Running time(s)    |                     |                    |                    |                     |                     |
+| :-----------------: | ------------------ | ------------------- | ------------------ | ------------------ | ------------------- | ------------------- |
+|                     | A                  | B                   | C                  | D                  | E                   | F                   |
+| Brutal Force Solver | 1.4505672454833984 | 1.4548630714416504  | 1.4521090984344482 | 1.4238920211791992 | 1.4501559734344482  | 1.4422638416290283  |
+|    Octree Solver    | 0.1357870101928711 | 0.16275882720947266 | 0.1610329151153564 | 0.1291041374206543 | 0.14434003829956055 | 0.09977316856384277 |
 
 #### 2) Unknown case
 
@@ -324,9 +325,95 @@ method performs better than the Bounding Sphere Search method.
 
 ## IV. Result and Discussions
 
+### 1.A-Debug
 
+The result is compared  with the "PA3-A-Debug-own-output.txt" and shown in the table below.
 
+<h6 align="center">TABLE 1 PA3-A-Debug-own-output</h6>
 
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | (17.90666   25.32838  -18.84287   17.90731   25.32410  -18.84304    0.00434)<br/>( -39.30009  -22.32570  -30.75257  -39.30331  -22.32773  -30.75337    0.00389)<br/>  (-9.82757  -13.44235   -1.22125   -9.82755  -13.44231   -1.22128    0.00005)<br/> | (17.91    25.32   -18.84        17.91    25.32   -18.84     0.000)<br/>  (-39.30   -22.33   -30.75       -39.30   -22.33   -30.75     0.000)<br/>   (-9.83   -13.44    -1.22        -9.83   -13.44    -1.22     0.000)<br/> |
+
+### 2.B-Debug
+
+The result is compared  with the "PA3-B-Debug-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 2 PA3-B-Debug-own-output</h6>
+
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | (1.15508   11.01661   -8.29899    1.18421   10.94645   -8.26507    0.08320)<br/>(-31.61757   -5.26328  -12.85190  -32.46366   -3.96838   -9.86385    3.36468)<br/>(-24.43960   -0.75184  -14.42152  -25.33479    0.98430  -12.44331    2.78008)<br/> | (1.15    11.01    -8.30         1.18    10.95    -8.27     0.082)<br/>  (-31.62    -5.26   -12.85       -32.46    -3.97    -9.86     3.366)<br/>  (-24.44    -0.76   -14.42       -25.34     0.98   -12.44     2.784)<br/> |
+
+### 3.C-Debug
+
+The result is compared  with the "PA3-C-Debug-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 3 PA3-C-Debug-own-output</h6>
+
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | (27.51716   -8.17727    6.19635   27.51501   -8.14967    6.18664    0.02933)<br/>(-8.77465    6.25957   46.45507   -6.95442    6.25081   46.40286    1.82100)<br/>(27.63058  -11.79476  -12.06240   27.82258  -12.01527  -11.99464    0.30014)<br/> | (27.52    -8.18     6.20        27.51    -8.15     6.19     0.030)<br/>   (-8.78     6.25    46.45        -6.95     6.25    46.40     1.823)<br/>   (27.63   -11.80   -12.06        27.82   -12.02   -12.00     0.298)<br/> |
+
+### 4.D-Debug
+
+The result is compared  with the "PA3-D-Debug-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 4 PA3-D-Debug-own-output</h6>
+
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922)<br/>   (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
+
+### 5.E-Debug
+
+The result is compared  with the "PA3-E-Debug-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 5 PA3-E-Debug-own-output</h6>
+
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | ( -2.28196   -5.06556  -27.61830   -0.78391   -4.32855  -28.66912    1.97271) <br/> (-41.51150  -13.61948  -42.49447  -38.68369  -13.27770  -40.83609    3.29599) <br/>  (30.09727   15.19825   -6.44416   33.02990   17.64569   -6.29841    3.82251)<br/> | (-2.28    -5.07   -27.62        -0.78    -4.34   -28.67     1.976)<br/>  (-41.51   -13.61   -42.49       -38.68   -13.28   -40.84     3.296)<br/>   (30.09    15.21    -6.45        33.02    17.65    -6.30     3.816)<br/> |
+
+### 6.F-Debug
+
+The result is compared  with the "PA3-F-Debug-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 6 PA3-F-Debug-own-output</h6>
+
+|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | ( -9.27443  -29.37243  -38.63571  -10.81595  -27.29781  -37.41410    2.85878)<br/> (-38.37045    0.91475  -25.07241  -39.95337    1.99688  -25.06008    1.91750)<br/>(-5.78249  -29.91310  -19.62803   -7.35776  -27.20945  -20.30206    3.20085)<br/> | (-9.27   -29.37   -38.63       -10.81   -27.29   -37.41     2.856)<br/>  (-38.36     0.91   -25.07       -39.95     2.00   -25.06     1.924)<br/>   (-5.79   -29.91   -19.63        -7.36   -27.21   -20.30     3.195)<br/> |
+
+### 7.G-Debug
+
+The result is compared  with the "PA3-G-Unknown-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 7 PA3-G-Unknown-own-output.txt</h6>
+
+|      | OUR RESULTS                                                  |
+| ---- | ------------------------------------------------------------ |
+|      | (-13.66093   12.38037   30.02801  -13.96138   11.96082   30.24026    0.55799)<br/>   （16.00902   24.41337    8.53591   16.55037   26.03651    9.01081    1.77572)<br/>    （9.75001   15.57415  -10.16029    9.92203   15.53096   -9.94482    0.27908)<br/> |
+
+### 8.H-Debug
+
+The result is compared  with the "PA3-H-Unknown-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 8 PA3-H-Unknown-own-output.txt</h6>
+
+|      | OUR RESULTS                                                  |
+| ---- | ------------------------------------------------------------ |
+|      | ( 2.51675  -13.64304    8.64420    2.83203  -11.96537    8.47300    1.71560)<br/>   （-4.31288  -12.33908  -37.45976   -2.14691  -12.27012  -38.16811    2.27991)<br/>  （-35.97575   -7.62909  -42.13914  -36.66262   -7.35385  -42.91870    1.07483)<br/> |
+
+### 9.J-Debug
+
+The result is compared  with the "PA3-J-Unknown-own-output.txt" and shown in the table below.
+
+<h6 align="center">TABLE 9 PA3-J-Unknown-own-output.txt</h6>
+
+|      | OUR RESULTS                                                  |
+| ---- | ------------------------------------------------------------ |
+|      | (21.48054   -0.92945   49.72730   20.59832   -0.49203   49.58690    0.99467)<br/>   （25.36021    6.03934   25.74393   27.53223    5.82745   26.43426    2.28892)<br/>    （8.03087   10.08615  -11.70728    7.97719   10.55353  -11.99916    0.55365)<br/> |
 
 ## Contributions
 
@@ -339,8 +426,6 @@ Jiaming Zhang developed method ; Chongjun Yang developed other methods of this P
 [1] 
 
 [2] 
-
-
 
 
 
