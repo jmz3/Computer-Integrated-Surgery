@@ -14,7 +14,6 @@ import cispa.DataProcess as DP
 from cispa.CarteFrame import CarteFrame
 from cispa.FindClosestPoint2Mesh import FindClosestPoint2Mesh
 from cispa.Octree import Octree
-from cispa.PivotCalibration import calib_pivot_points
 from cispa.Registration import regist_matched_points
 
 '''
@@ -58,7 +57,7 @@ def main(data_dir, output_dir, name):
 
 
     ############################################################################
-    ################## Compute the dk here #####################################
+    ####################### Compute the dk here ################################
     ############################################################################
     # Input the body description here
     rigidbody_A_path = data_dir / f"Problem3-BodyA.txt"
@@ -103,11 +102,12 @@ def main(data_dir, output_dir, name):
         d_tip.append(F_Bk @ F_Ak @ rigidbody_A_tip)
 
     d_tip = np.concatenate(d_tip, axis = 1).T
+    dk = d_tip
     # log.info(f"dk for {name} data: {d_tip}")
 
     
     ############################################################################
-    ################## Find CLosest ck for given dk#############################
+    ##################### Find CLosest ck for given dk##########################
     ############################################################################
     Closest2Mesh_ = FindClosestPoint2Mesh(vertex, Nface, face_idx) # initialize an object of FindClosestPoint2Mesh
 
@@ -125,11 +125,28 @@ def main(data_dir, output_dir, name):
     end = time.time()
     log.info(f"Octree Solver time = \n{end - start} seconds")
 
-    ck_brute = [brute_result[i][0] for i in range(len(brute_result))]
-    ck_octree = [octree_result[i][0] for i in range(len(octree_result))]
+    ck_brute = [brute_result[i][:] for i in range(len(brute_result))]
+    ck_octree = [octree_result[i][:] for i in range(len(octree_result))]
     
-    Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
+    ck = ck_octree
+    ck = np.concatenate(ck,axis = 0) # Concatenate list members 
+    ck = np.reshape(ck,(Nframes, 3)) # Transfer to ndarray
 
+    ############################################################################
+    ###################### Output the result ###################################
+    ############################################################################
+    diff = np.zeros(Nframes)
+    for i in range(Nframes):
+        diff[i] = np.linalg.norm(dk[i,:] - ck[i,:])
+    
+    diff = np.reshape(diff,(-1,1))
+    log.info(f"|| dk - ck || = \n {diff}")
+
+    Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
+    OutputData = np.hstack([dk,ck])
+    OutputData = np.hstack((OutputData, diff))
+
+    DP.save_txt_data(output_path, Title, OutputData)
 
 
 if __name__=="__main__":
