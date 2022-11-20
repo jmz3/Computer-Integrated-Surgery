@@ -12,17 +12,18 @@ from rich.logging import RichHandler
 import cispa.DataProcess as DP
 from cispa.CarteFrame import CarteFrame
 from cispa.FindClosestPoint2Mesh import FindClosestPoint2Mesh
+from cispa.Octree import Octree
 from cispa.PivotCalibration import calib_pivot_points
 from cispa.Registration import regist_matched_points
 
 '''
 Problem Description:
-Use brute force to find the closest point on the mesh to a given point
+Find the closest point on the mesh to a given point using the octree data structure
 
 Steps taken:
 1. Load the mesh data
 2. Generate a random point
-3. Find the closest point on the mesh to the random point using brute force method
+3. Find the closest point on the mesh to the random point using the octree data structure
 4. Plot the mesh and the random point to check if it is correct
 
 '''
@@ -59,13 +60,10 @@ def main(data_dir, output_dir, name):
 
     Closest2Mesh_ = FindClosestPoint2Mesh(vertex, Nface, face_idx) # initialize an object of FindClosestPoint2Mesh
     point = np.array([20.0,-30.0,0.0]).reshape(3)
-    closest_point, min_dist = Closest2Mesh_.BruteForceSolver(point)
 
+    closest_point = Closest2Mesh_.OctreeSolver(point)
     print(closest_point)
-    print(min_dist)
 
-
-    # plot the closest point on the mesh to the random point
     fig = plt.figure(figsize=(10,10))
     plt.set_loglevel('warning')
     ax = fig.add_subplot(projection='3d')
@@ -77,9 +75,8 @@ def main(data_dir, output_dir, name):
     ax.text(point[0]+offset,point[1]+offset,point[2]+offset,"tip point")
 
     plt.show()
-
-
-
+    
+    
 
 if __name__ == "__main__":
     main()

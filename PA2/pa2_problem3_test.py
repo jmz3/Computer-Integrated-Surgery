@@ -67,8 +67,6 @@ def main(data_dir, output_dir, name):
     correction_coeff = CorrectDistortion.fit(sensor_data, ground_truth)
 
 
-
-
     ###########################################################################
     ###################  Perform pivot calibration  ###########################
     ###########################################################################

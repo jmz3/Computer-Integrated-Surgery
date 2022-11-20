@@ -12,10 +12,13 @@ from rich.logging import RichHandler
 
 '''
 Problem Description:
-Input the body description data and the readings of the optical trackers
-Perform registration to 
+Find the tool tip position dk w.r.t. the fiducial coordinate system 
 
 Steps taken:
+1. Load rigid body description
+2. Load the readings of the LED trackers
+3. Perform point cloud registration to find Fak, Fbk
+4. dk = inv(Fbk)*Fak*Atip
 
 '''
 
@@ -81,9 +84,8 @@ def main(data_dir, output_dir, name):
         F_Bk.inverse()
         d_tip.append(F_Bk @ F_Ak @ rigidbody_A_tip)
 
-    d_tip = np.concatenate(d_tip, axis = 1)
-    print(d_tip.shape)
-    
+    d_tip = np.concatenate(d_tip, axis = 1).T
+    log.info(f"dk for {name} data: {d_tip}")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,13 @@ def regist_matched_points(X: np.ndarray, Y: np.ndarray):
 
     """
     Find the transformation matrix F that satisfies FX = Y
+    Param:
+    ---------------------------------------------------------------------------
+        X: (n,3) numpy array, the points to be transformed
+        Y: (n,3) numpy array, the points to be matched
+    Return:
+    ---------------------------------------------------------------------------
+        F: (3,3) numpy array, the transformation matrix
     """
     # type check and reshape the input data as:
     # [[x1 x2 x3 ...]
