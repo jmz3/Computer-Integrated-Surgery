@@ -1,18 +1,41 @@
  <h1 align="center">PA3-REPORT</h1>
 
+
+
 ## **I. Mathematics & Algorithms Implementation**
 
 This section introduces the mathematical principles and implemented algorithm for the 6 problems in Programming Assignment 3.
 
-## 0. Scienario
+### 0. Scienario
 
 In the assignment of programming, we are asked to implement and use a simplified version of iterative-closest point registration. Our purpose is to find the closest points in the surface of the model to each point in the the point cloud. We have tired Brutal Search, Bounding SphereSearch,  and Octree Search.
 
 In the programming assignment, we use LED trackers to detect 2 rigid bodies and obtain the point cloud from intraoperative reality. The CT system could obtain the information of the 3D surface model. 
 
+### 1. Find A Tip with respect to B Frame
 
+#### 1) Mathematical Method
 
-### 1. Find the closest point in triangle
+Here we use the following workflow to implement to matching part of iterative closest points.
+(1) get the body definition files, recorded as $a$ and $b$ ;
+
+(2) for each data frame $k$,  we get body definition files, recorded as  $\vec A_{i,k}$  and   $\vec B_{i,k}$ ;
+
+(3) We have rigid bodies $A$ and $B$. We put the rigid body $A$ as a pointer and keep its tip contact with the points on the bone's surface. We put the tip of rigid body $B$ screwing into the bone. We calculate the point cloud  {$\vec d_k$} according to the formula as follows.
+$$
+\vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}
+$$
+where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ 
+
+#### 2) Code Implementation
+
+The code implemented in **"/PA3/pa3_compute_dk_test.py"**. Here we load data and find $\vec d_k$ . In the terminal, run the following command:
+
+```bash
+
+```
+
+### 2. Find the Closest Point in Triangle
 
 #### 1) Mathematical Method
 
@@ -49,34 +72,13 @@ The code implemented in **"/PA3/pa3_.py"**.
 
 ```
 
-### 2. find Atip wrt B frame
-
-Here we use the following workflow to implement to matching part of iterative closest points.
-(1) get the body definition files, recorded as $a$ and $b$ ;
-
-(2) for each data frame $k$,  we get body definition files, recorded as  $\vec A_{i,k}$  and   $\vec B_{i,k}$ ;
-
-(3) We have rigid bodies $A$ and $B$. We put the rigid body $A$ as a pointer and keep its tip contact with the points on the bone's surface. We put the tip of rigid body $B$ screwing into the bone. We calculate the point cloud  {$\vec d_k$} according to the formula as follows.
-$$
-\vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}
-$$
-where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ 
-
-#### 2) Code Implementation
-
-The code implemented in **"/PA3/pa3_compute_dk_test.py"**.
-
-```bash
-
-```
-
-### 3. Find the closest point on mesh - linear search
+### 3. Find the Closest Point on Mesh - Linear Search
 
 #### 1) Mathematical Method
 
 For each point in {$\vec d_k$},  finding the closest triangle mesh equals to find the nearest point $\vec C_{k,i}$. The closest triangle could be find in many methods.  The methods such as Brute- Force Search, Simple Search with Bounding Spheres，and Search Based on Octree have been used in our assignment.
 
-**1.1) Brute-Force Search**
+**1.1) Linear Search by Brute Force**
 
 Build linear list of triangles and search for closest triangle to each point  $\vec d_k$. For every point  $\vec d_k$, we could use Brute-Force Search to compute the distance between $\vec d_k$ and its corresponding  $\vec C_{k,i}$, and we could find $\vec C_{k,i}^{nearest}$ .
 
@@ -92,7 +94,7 @@ Build linear list of triangles and search for closest triangle to each point  $\
 | Step. 8   | **end if**                                                   |
 | Step. 9   | **end for**                                                  |
 
-**1.2) Simple Search with Bounding Spheres**
+**1.2) Linear Search by Bounding Spheres**
 
 Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows.
 
@@ -143,7 +145,6 @@ If$γ\leq0$ , then just pick $λ\leq0$. Otherwise, pick $λ=γ$.
 | Step. 2   | **for** $i =$ 1 to number of triangles do |
 | Step. 3   | **if** $||q_i-a||-r_i\leq bound$ **then** |
 | Step. 4   | $c_i=||\vec d_k-\vec C_{k,i}^{nearest}||$ |
-|           |                                           |
 | Step. 5   | **if**  $d_i\leq bound$  **then**         |
 | Step. 6   | bound←$d_i$                               |
 | Step. 7   | closest point←$c_{i}$                     |
@@ -151,46 +152,51 @@ If$γ\leq0$ , then just pick $λ\leq0$. Otherwise, pick $λ=γ$.
 | Step. 9   | **end if**                                |
 | Step. 10  | **end for**                               |
 
+#### 2) Code Implementation
+
+**2.1) Linear Search by Brute Force**
+
+The code implemented in **"/PA3/pa3_.py"**.
+
+```bash
+
+```
+
+##### **2.2) Linear Search by Bounding Spheres**
+
+The code implemented in **"/PA3/pa3_.py"**.
+
+```bash
+
+```
 
 
-### 4 . find closest point on mesh - Octree search
 
-The algorithm for Octree Search has two main parts: the tree construction and
-the closest point detection.  We have implemented a Python according to the slides in the class.
+### 4 . Find Closest Point on Mesh - Octree Search
 
-| Algorithm |               Class Definition of Octree                |
-| :-------: | :-----------------------------------------------------: |
-|  Step. 1  |                    classdef $Octree$                    |
-|  Step. 2  |                       Properties                        |
-|           | split point, upper, lower, centers, index, child, depth |
-|  Step. 3  |                         Methods                         |
-|           |                        Octree();                        |
-|           |                  enlarge bound(this);                   |
+#### 1) Mathematical Method
 
-*BoundingBaseNode(Spheres, nSpheres)* recursively constructs the tree. The member method *FindClosestPoint(v)*  find the closest point on the surface recursively.
+The algorithm for Octree Search has two main parts: the tree construction and the closest point detection.  We have implemented a Python according to the slides in the class.
 
-
+| Algorithm | Octree Search                                                |
+| --------- | ------------------------------------------------------------ |
+| Step. 1   | Import all triangles                                         |
+| Step. 2   | Compute bounding spheres for all triangles                   |
+| Step. 3   | Find Centroid Point                                          |
+|           | N triangles w.r.t N spheres with its own center and radius; Add all N centers together and then divided by N to find the Centroid Point of the sphere |
+| Step. 4   | Split the Spheres into 8 quadrants                           |
+|           | Compare Sphere.Center.x and Centroid Point.x:  if Sphere.Center.x<Centroid Point.x, divide the Sphere into 2 parts; |
+|           | Compare Sphere.Center.y and Centroid Point.y: if Sphere.Center.y<Centroid Point.y, divide the Sphere into 2 parts; |
+|           | Compare Sphere.Center.z and Centroid Point.z: if Sphere.Center.z<Centroid Point.z, divide the Sphere into 2 parts; |
+| Step. 5   | Generate Subtrees                                            |
+| Step. 6   | Find Closest Subtree                                         |
+| Step. 7   | Generate Bounding Box                                        |
+|           | ...                                                          |
+|           | **if**  Subtree.length < 2                                   |
+|           | **endif**                                                    |
 
 
 #### 2) Code Implementation
-
-**1.1) Brute-Force Search**
-
-The code implemented in **"/PA3/pa3_.py"**.
-
-```bash
-
-```
-
-**1.2) Simple Search with Bounding Spheres**
-
-The code implemented in **"/PA3/pa3_.py"**.
-
-```bash
-
-```
-
-**1.3) Search Based on Octree**
 
 The code implemented in **"/PA3/pa3_.py"**.
 
@@ -210,6 +216,7 @@ The overall structure for the ../PROGRAMS folder is described as follows:
     │   ├── **output**	# This DIR contains all the result of our program
     │   ├── **pa3_main.py**				# This is the main process that output the result 
     │   ├── **pa3_compute_dk_test.py**	  # compute the sample points input file
+    │   ├── **pa3_step2_test.py**
     │   └── **pa3_linear_search_test.py**	 # Linear search test to find closest point on mesh
     └── **cispa** 			# Functions are contained in this directory
         ├── **CarteFrame.py** 				#
@@ -238,15 +245,7 @@ $ ls
 PA3   cispa
 ```
 
-### 1. Verification for Linear Search Test
-
-This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_linear_search_test.py". In the terminal, run the following command:
-
-```bash
-
-```
-
-### 2. Verification for compute dk Test
+### 1. Verification for Compute dk Test
 
 This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_step1_test.py". In the terminal, run the following command:
 
@@ -254,17 +253,21 @@ This script is to use to find closest point on mesh routine that works by linear
 
 ```
 
+### 2. Verification for Linear Search Test
 
+This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_linear_search_test.py". In the terminal, run the following command:
 
-#### 1) Verification for Compute Bouding Sphere(vertex)
+```bash
+
+```
+
+#### 1) Verification for Compute Bounding Sphere(vertex)
 
 As shown in Fig.6. , the input vertices form a triangle in the x-y plane. The bounding sphere from our unit test program is consistent with the geometric relationship in the Fig.6.
 
 ```bash
 
 ```
-
-
 
 #### 2) Verification for Compute Closest Point(point, vertex)
 
@@ -296,17 +299,12 @@ In Table 2 , 'BoundSp' denoting the Bounding Sphere Search demonstrates the high
 
 **Table 2**:  Comparison of various methods in running time for Debug case A-F
 
-|  Method  | Running time(s) |      |      |      |      |      |
-| :------: | --------------- | ---- | ---- | ---- | ---- | ---- |
-|          | A               | B    | C    | D    | E    | F    |
-|  Brutal  |                 |      |      |      |      |      |
-| BoundSp* |                 |      |      |      |      |      |
-|  Octree  |                 |      |      |      |      |      |
-|  KDtree  |                 |      |      |      |      |      |
-
-
-
-
+|  Method  | Running time(s) |      |      |      |      |
+| :------: | --------------- | ---- | ---- | ---- | ---- |
+|          | A               | B    | C    | D    | E    |
+|  Brutal  |                 |      |      |      |      |
+| BoundSp* |                 |      |      |      |      |
+|  Octree  |                 |      |      |      |      |
 
 #### 2) Unknown case
 
@@ -323,9 +321,6 @@ method performs better than the Bounding Sphere Search method.
 |  Brutal  |                 |      |      |      |
 | BoundSp* |                 |      |      |      |
 |  Octree  |                 |      |      |      |
-|  KDtree  |                 |      |      |      |
-
-
 
 ## IV. Result and Discussions
 
@@ -344,8 +339,6 @@ Jiaming Zhang developed method ; Chongjun Yang developed other methods of this P
 [1] 
 
 [2] 
-
-
 
 
 
