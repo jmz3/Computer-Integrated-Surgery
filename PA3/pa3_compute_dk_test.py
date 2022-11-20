@@ -85,7 +85,7 @@ def main(data_dir, output_dir, name):
         d_tip.append(F_Bk @ F_Ak @ rigidbody_A_tip)
 
     d_tip = np.concatenate(d_tip, axis = 1).T
-    log.info(f"dk for {name} data: {d_tip}")
+    log.info(f"dk for {name} data: \n{d_tip}")
 
 
 if __name__ == "__main__":

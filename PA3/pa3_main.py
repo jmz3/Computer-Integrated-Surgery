@@ -48,8 +48,7 @@ def main(data_dir, output_dir, name):
     # Input the body description here
     mesh_path = data_dir / f"Problem3MeshFile.sur"
 
-    result_path = data_dir / f"{name}-output1.txt"
-    output_path = output_dir / f"{name}-own-output1.txt"
+    output_path = output_dir / f"{name}-own-output.txt"
 
     Nvertex, vertex, Nface, face_idx = DP.load_mesh_data(mesh_path)
     face_idx = face_idx[:, :3].astype(int) # type conversion to int
@@ -63,8 +62,8 @@ def main(data_dir, output_dir, name):
     rigidbody_A_path = data_dir / f"Problem3-BodyA.txt"
     rigidbody_B_path = data_dir / f"Problem3-BodyB.txt"
 
-    result_path = data_dir / f"{name}-output1.txt"
-    output_path = output_dir / f"{name}-own-output1.txt"
+    result_path = data_dir / f"{name}-output.txt"
+    output_path = output_dir / f"{name}-own-output.txt"
 
     rigidbody_A, rigidbody_A_info = DP.load_txt_data_with_space(
         rigidbody_A_path)
