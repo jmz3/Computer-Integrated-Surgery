@@ -1,31 +1,29 @@
  <h1 align="center">PA3-REPORT</h1>
 
-
+![Screen Shot 2022-10-25 at 9.07.17 PM](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screen Shot 2022-10-25 at 9.07.17 PM.png)
 
 ## **I. Mathematics & Algorithms Implementation**
 
-This section introduces the mathematical principles and implemented algorithm for the 6 problems in Programming Assignment 3.
+This section introduces the mathematical principles and implemented algorithm for locating the closest point to a given mesh file described in Programming Assignment 3.
 
 ### 0. Scienario
 
-In the assignment of programming, we are asked to implement and use a simplified version of iterative-closest point registration. Our purpose is to find the closest points in the surface of the model to each point in the the point cloud. We have tired Brutal Search, Bounding SphereSearch,  and Octree Search.
+In the assignment of programming, a simplified version of Iterative Closest Point (ICP) has been developped. Our purpose is to find the closest points in the surface of the model to each point in the the point cloud. A naive search approach has been implemented, and the performance is tested based on the running time consumption. To speed up the searching process, we introduced  Octree structure. Both methods have been tested and validated based on given data.
 
-In the programming assignment, we use LED trackers to detect 2 rigid bodies and obtain the point cloud from intraoperative reality. The CT system could obtain the information of the 3D surface model. 
+In the programming assignment, we use LED trackers to detect 2 rigid bodies and obtain the point cloud from intraoperative reality. The CT system could obtain the information of the 3D surface model. <img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screenshot 2022-11-20 at 3.03.26 AM.png" alt="Screenshot 2022-11-20 at 3.03.26 AM" style="zoom:50%;" />
+
+The mathematical steps followed are described in this section.
 
 ### 1. Find A Tip with respect to B Frame
 
 #### 1) Mathematical Method
 
-Here we use the following workflow to implement to matching part of iterative closest points.
-(1) get the body definition files, recorded as $a$ and $b$ ;
+Given two fiducials with known rigid markers sticked on them, we want to find one fiducial described in the local frame of another fiducial rigid body. First, get the body definition files, recorded as $a$ and $b$ ; Second, for each data frame $k$,  we get body definition files, recorded as  $\vec A_{i,k}$  and   $\vec B_{i,k}$ ; Then, we read rigid body description file and import them as $A$ and $B$. We put the rigid body $A$ as a pointer and keep its tip contact with the points on the bone's surface. We put the tip of rigid body $B$ screwing into the bone. We calculate the point cloud  {$\vec d_k$} according to the formula as follows.
 
-(2) for each data frame $k$,  we get body definition files, recorded as  $\vec A_{i,k}$  and   $\vec B_{i,k}$ ;
-
-(3) We have rigid bodies $A$ and $B$. We put the rigid body $A$ as a pointer and keep its tip contact with the points on the bone's surface. We put the tip of rigid body $B$ screwing into the bone. We calculate the point cloud  {$\vec d_k$} according to the formula as follows.
 $$
 \vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}
 $$
-where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ 
+where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ are derived from the point cloud to point cloud registration method introduce in prevoius programming assignments.
 
 #### 2) Code Implementation
 
@@ -393,7 +391,7 @@ The result is compared  with the "PA3-G-Unknown-own-output.txt" and shown in the
 
 |      | OUR RESULTS                                                  |
 | ---- | ------------------------------------------------------------ |
-|      | (-13.66093   12.38037   30.02801  -13.96138   11.96082   30.24026    0.55799)<br/>   （16.00902   24.41337    8.53591   16.55037   26.03651    9.01081    1.77572)<br/>    （9.75001   15.57415  -10.16029    9.92203   15.53096   -9.94482    0.27908)<br/> |
+|      | (-13.66093   12.38037   30.02801  -13.96138   11.96082   30.24026    0.55799)<br/>   (16.00902   24.41337    8.53591   16.55037   26.03651    9.01081    1.77572)<br/>    (9.75001   15.57415  -10.16029    9.92203   15.53096   -9.94482    0.27908)<br/> |
 
 ### 8.H-Debug
 
@@ -403,7 +401,7 @@ The result is compared  with the "PA3-H-Unknown-own-output.txt" and shown in the
 
 |      | OUR RESULTS                                                  |
 | ---- | ------------------------------------------------------------ |
-|      | ( 2.51675  -13.64304    8.64420    2.83203  -11.96537    8.47300    1.71560)<br/>   （-4.31288  -12.33908  -37.45976   -2.14691  -12.27012  -38.16811    2.27991)<br/>  （-35.97575   -7.62909  -42.13914  -36.66262   -7.35385  -42.91870    1.07483)<br/> |
+|      | ( 2.51675  -13.64304    8.64420    2.83203  -11.96537    8.47300    1.71560)<br/>   (-4.31288  -12.33908  -37.45976   -2.14691  -12.27012  -38.16811    2.27991)<br/>  (-35.97575   -7.62909  -42.13914  -36.66262   -7.35385  -42.91870    1.07483)<br/> |
 
 ### 9.J-Debug
 
@@ -413,7 +411,7 @@ The result is compared  with the "PA3-J-Unknown-own-output.txt" and shown in the
 
 |      | OUR RESULTS                                                  |
 | ---- | ------------------------------------------------------------ |
-|      | (21.48054   -0.92945   49.72730   20.59832   -0.49203   49.58690    0.99467)<br/>   （25.36021    6.03934   25.74393   27.53223    5.82745   26.43426    2.28892)<br/>    （8.03087   10.08615  -11.70728    7.97719   10.55353  -11.99916    0.55365)<br/> |
+|      | (21.48054   -0.92945   49.72730   20.59832   -0.49203   49.58690    0.99467)<br/>   (25.36021    6.03934   25.74393   27.53223    5.82745   26.43426    2.28892)<br/>    (8.03087   10.08615  -11.70728    7.97719   10.55353  -11.99916    0.55365)<br/> |
 
 ## Contributions
 
