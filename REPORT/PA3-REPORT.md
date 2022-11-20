@@ -23,15 +23,23 @@ Given two fiducials with known rigid markers sticked on them, we want to find on
 $$
 \vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}
 $$
-where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ are derived from the point cloud to point cloud registration method introduce in prevoius programming assignments.
+where $A_{k}$ = $F_{A,k}a$  ， $B_{k}$ = $F_{B,k}b$ are derived from the point cloud to point cloud registration method introduce in prevoius programming assignments Ref [1](1).
 
 #### 2) Code Implementation
 
-The code implemented in **"/PA3/pa3_compute_dk_test.py"**. Here we load data and find $\vec d_k$ . In the terminal, run the following command:
+The code implemented in **"/PA3/pa3_compute_dk_test.py"**. The basic steps are:
 
-```bash
+| Algorithm 1 | Compute dk                                                   |
+| ----------- | ------------------------------------------------------------ |
+| **Input**:  | Point Clouds: LED readings $A_k$ and $B_k$ , rigid body description file $A$ and $B$ |
+| **Output**: | $A_{tip}$ position w.r.t. $B$ body frame, i.e. $d_k$ |
+|  | Load $A_k$ , $B_k$ , $A$ and $B$ |
+|  | **FOR** each frame in { $A_k , B_k$} |
+|  | **CALL** $F_{A,k}$ = Registration($A_k$ , $A$) $F_{B,k}$ = Registration($B_k$ , $B$) |
+|  | **COMPUTE** $\vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}$ |
+|  | **ENDFOR** |
 
-```
+
 
 ### 2. Find the Closest Point in Triangle
 
@@ -39,68 +47,91 @@ The code implemented in **"/PA3/pa3_compute_dk_test.py"**. Here we load data and
 
 According to the notes in class,  the closest point $\vec C_{k,i}$would be calculated as follows 
 
-1. For the system as shown in Fig. 1. the function keeps right as follows
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screenshot 2022-11-20 at 4.05.40 AM.png" alt="Screenshot 2022-11-20 at 4.05.40 AM" style="zoom:50%;" />
 
+For the system as shown in the above figure, $\vec {ac}$ can be derived from 
 $$
-\vec a-\vec p\approxλ(\vec q-\vec p)+µ(\vec r-\vec p)
+\vec{ac} = (\vec a-\vec p) -( \lambda (\vec q-\vec p)+\mu(\vec r-\vec p))
 $$
 
-The above functions could be rewritten as a Least Squares form as follows:
+Since the closest point c must ensure $\vec{ac}$ to be the shortest vector among all possible choices of point c. The above functions could be rewritten as a Least Squares form as follows:
 $$
-\begin{bmatrix} \vec q-\vec p & \vec r-\vec p \end{bmatrix}  \begin{bmatrix} λ\\µ\end{bmatrix}
+\begin{bmatrix} \vec q-\vec p & \vec r-\vec p \end{bmatrix}  \begin{bmatrix} \lambda\\\mu\end{bmatrix}
 \approx\vec a-\vec p
 $$
-Hence, by solving the Least Squares question, λ and µ could be obtained.
-
-2. According to the  geometric relationship in Fig.1, the function could be written as follows.
+Hence, by solving the Least Squares question, $\lambda$ and $\mu$ could be obtained. According to the  geometric relationship in Fig.1, the function could be written as follows.
 
 $$
 \vec c=\vec p+λ(\vec q-\vec p)+µ(\vec r-\vec p)
 $$
 
-If $λ\geq0,µ\geq0,λ+µ\leq1$, then $\vec c$ locates within the triangle and become the closest point. Otherwise,  we have to find a point on the border of the triangle. Here we define $\vec c^{*}$ as the project of $\vec c$  on the border of the triangle and as the closest point.  We could calculate  $\vec c^{*}$ according to Fig.2. and Fig.3.
+If $\lambda\geq0,\mu\geq0,\lambda+\mu\leq1$, then $\vec c$ locates within the triangle and become the closest point. ![Screenshot 2022-11-20 at 4.13.01 AM](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screenshot 2022-11-20 at 4.13.01 AM.png)Otherwise,  we have to find a point on the edge of the triangle. There are 3 different regions divided by the $\lambda$ and $\mu$. For every case, we can project the computed c on a certain edge to find the actual closest point. The projection $c^*$is shown in the following figure: 
 
-3. For each $\vec d_k$,  the closest point of each triangle mesh could be found according to  the above steps, here we get the point set{$\vec C_{k,i}$}.
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/IMG_0597.jpg" alt="IMG_0597" style="zoom:50%;" />
+
+where $\alpha$ is given by:
+$$
+\alpha = Max(0, Min(\frac{(c-p) \cdot (q-p)}{(q-p)\cdot (q-p)},1))
+$$
+Therefore, $c^*$ can be established by the linear combination of p and q:
+$$
+c^* = p + \alpha \times (q-p)
+$$
+Now, replace $c$ with $c^*$, we will be able to find the closest point to a specific triangle all the time.
 
 #### 2) Code Implementation
 
-The code implemented in **"/PA3/pa3_.py"**.
+The code implemented in **"/cispa/FindClosestPoint2Triangle.py"** and the test script is developped in **"/PA3/pa3_find_closest_on_triangle.py"**. The steps are as following:
 
-```bash
+| Algorithm 2 | Find Closest Point to Triangle                               |
+| ----------- | ------------------------------------------------------------ |
+| **Input**:  | Point $a$ and Triangle $T = \{p,q,r\}$                       |
+| **Output**: | Closest Point $h$                                            |
+|             | **CALL** $ \begin{bmatrix} \lambda & \mu\end{bmatrix}^T$ = LeastSquare($\begin{bmatrix} \vec q-\vec p & \vec r-\vec p \end{bmatrix} ,  \vec a-\vec p$) |
+|             | **COMPUTE**: $h$ = $ p + \lambda (q-p) + \mu(r-p)$           |
+|             | **IF** $\lambda < 0$:                                        |
+|             | &nbsp; $h$ = ProjectOnSegment($h,r,p$)                       |
+|             | **ELIF** $\mu < 0$:                                          |
+|             | &nbsp; $h$ = ProjectOnSegment($h,p,q$)                       |
+|             | **ELIF** $\lambda + \mu > 1$:                                |
+|             | &nbsp; $h$ = ProjectOnSegment($h,q,r$)                       |
+|             | **ENDIF**                                                    |
+| **RETURN**: | $h$ is the closest point on the triangle                     |
 
-```
+
 
 ### 3. Find the Closest Point on Mesh - Linear Search
 
 #### 1) Mathematical Method
 
-For each point in {$\vec d_k$},  finding the closest triangle mesh equals to find the nearest point $\vec C_{k,i}$. The closest triangle could be find in many methods.  The methods such as Brute- Force Search, Simple Search with Bounding Spheres，and Search Based on Octree have been used in our assignment.
+For each point in {$\vec d_k$},  finding the closest triangle mesh equals to find the nearest point $\vec C_{k,i}$. The closest triangle could be find in many methods.  The methods such as Brute-Force Search, and Octree-based Search have been used in our assignment.
 
-**1.1) Linear Search by Brute Force**
+Build linear list of triangles and search for closest triangle to a given point. By calling FindClosestPoint2Triangle function introduced in subsection 2, we can get a set of closest points for all triangles in the given mesh. Compare the minimum distance for all triangles and find the closest one. This method is called Brute-Force Search.
 
-Build linear list of triangles and search for closest triangle to each point  $\vec d_k$. For every point  $\vec d_k$, we could use Brute-Force Search to compute the distance between $\vec d_k$ and its corresponding  $\vec C_{k,i}$, and we could find $\vec C_{k,i}^{nearest}$ .
+#### 2) Code Implementation
 
-| Algorithm | Linear Search by Brute Force                                 |
-| --------- | ------------------------------------------------------------ |
-| Step. 1   | minimum distance ←$∞$                                        |
-| Step. 2   | **for** $i =$ 1 to number of triangles do                    |
-| Step. 3   | $\vec C_{k,i}^{nearest}$ ← findTheClosestPoint($\vec d_k$, $triangle_i$) |
-| Step. 4   | $\vec d_k=||\vec d_k-\vec C_{k,i}^{nearest}||$               |
-| Step. 5   | **if** $\vec d_k\leq$minimum distance **then**               |
-| Step. 6   | minimum distance←$\vec d_k$                                  |
-| Step. 7   | closest point←$\vec C_{k,i}^{nearest}$                       |
-| Step. 8   | **end if**                                                   |
-| Step. 9   | **end for**                                                  |
+The code implemented in**"cispa/FindClosestPoint2Mesh.py"** and the test script is  **"/PA3/pa3_linear_search_test.py"**.
 
-**1.2) Linear Search by Bounding Spheres**
+| Algorithm3 | Linear Search by Brute Force                                 |
+| ---------- | ------------------------------------------------------------ |
+| **INPUT**  | Vertices Coordinates and Triangle Indices                    |
+| **OUTPUT** | A tuple that contains closest point and its corresponding distance |
+|            | minimum distance = $\infty$                                  |
+|            | **FOR** $i =$ index of the triangles                         |
+|            | &nbsp; **CALL**: $\vec C_{k,i}^{nearest}$ = FindClosestPoint2Triangle($\vec d_k$, $triangle_i$) |
+|            | &nbsp; $\vec d_k=||\vec d_k-\vec C_{k,i}^{nearest}||$        |
+|            | &nbsp; **IF** $\vec d_k\leq$minimum distance **then**        |
+|            | &nbsp; &nbsp; minimum distance =$\vec d_k$                   |
+|            | &nbsp; &nbsp; closest point = $\vec C_{k,i}^{nearest}$       |
+|            | &nbsp; **ENDIF**                                             |
+|            | **ENDFOR**                                                   |
+| **RETURN** | [minimum distance, closest point]                            |
 
-Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows.
 
-1. The scenario to find bounding sphere for each mesh triangle is shown as Fig.4.
 
-   
+### 4. Generate Bounding Spheres
 
-   Fig. 4.
+Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows. The scenario to find bounding sphere for each mesh triangle is shown as follows
 
 Here we assume edge $\vec a-\vec b$ is the longest. Then the center $\vec q$ of the sphere will work as follows.
 $$
@@ -129,11 +160,11 @@ $$
 $$
 \vec q=\vec f+λ\vec d
 $$
-with $(λ\vec d-\vec v)^2\leq(λ\vec d-\vec u)^2$. We could simplified as follows:
+with $(\lambda\vec d-\vec v)^2\leq(\lambda\vec d-\vec u)^2$. We could simplified as follows:
 $$
 λ\geq\frac{\vec v^2-\vec u^2}{2d(\vec v-\vec u)}=γ
 $$
-If$γ\leq0$ , then just pick $λ\leq0$. Otherwise, pick $λ=γ$.
+If$γ\leq0$ , then just pick $\lambda\leq0$. Otherwise, pick $\lambda=γ$.
 
 2. Simple Search with Bounding Spheres, the pseudo code of the algrithom is shown as follows.
 
@@ -217,18 +248,18 @@ The overall structure for the ../PROGRAMS folder is described as follows:
     │   ├── **pa3_find_closest_on_triangle.py** 
     │   ├── **pa3_octree_search_test.py**
     │   └── **pa3_linear_search_test.py**	 # Linear search test to find closest point on mesh
-    └── **cispa** 			# Functions are contained in this directory
-        ├── **CarteFrame.py** 				#
-        ├── **ComputeExpectValue.py** 		#
-        ├── **CorrectDistortion.py** 		#
-        ├── **DataProcess.py** 				# Contains useful functions like skew operation
+    └── **cispa** 			# Utility Functions are contained in this directory
+        ├── **CarteFrame.py**
+        ├── **ComputeExpectValue.py** 
+        ├── **CorrectDistortion.py** 	
+        ├── **DataProcess.py** 				# Import and Export Data
         ├── **FindBoundingSphere.py**
-        ├── **FindClosestPoint2Mesh.py**	   #  Find the closest point on the triangle to the given point P.
-        ├── **FindClosestPoint2Triangle.py**  # Find the closest point on the triangle to the given point P.
-        ├── **HomoRepresentation.py**    	#
-        ├── **Octree.py**
-        ├── **PivotCalibration.py**		 # Contains function : calib_pivot_points(F)
-        └── **Registration.py**				# Contains function : regist_matched_points(X,Y)
+        ├── **FindClosestPoint2Mesh.py** 	# Find the closest point on the mesh to point P.
+        ├── **FindClosestPoint2Triangle.py**	# Find the closest point on the triangle to P.
+        ├── **HomoRepresentation.py**
+        ├── **Octree.py** 							# Generate the octree based on given mesh
+        ├── **PivotCalibration.py**
+        └── **Registration.py**				
 
 ## III. Unit Test and Debug
 
@@ -244,6 +275,8 @@ And list all files to check whether you are in the correct directory.
 $ ls
 PA3   cispa
 ```
+
+**Dear Graders**, Before starting to run our code, please remember keep matplotlib in your virtual environment. 
 
 ### 1. Verification for Compute dk Test
 
@@ -299,11 +332,11 @@ In Table 2 , 'BoundSp' denoting the Bounding Sphere Search demonstrates the high
 
 **Table 2**:  Comparison of various methods in running time for Debug case A-F
 
-|       Method        | Running time(s)    |                     |                    |                    |                     |                     |
-| :-----------------: | ------------------ | ------------------- | ------------------ | ------------------ | ------------------- | ------------------- |
-|                     | A                  | B                   | C                  | D                  | E                   | F                   |
-| Brutal Force Solver | 1.4505672454833984 | 1.4548630714416504  | 1.4521090984344482 | 1.4238920211791992 | 1.4501559734344482  | 1.4422638416290283  |
-|    Octree Solver    | 0.1357870101928711 | 0.16275882720947266 | 0.1610329151153564 | 0.1291041374206543 | 0.14434003829956055 | 0.09977316856384277 |
+|       Method        | Time(s) | | | | | |
+| :-----------------: | --------------- | -------- | -------- | -------- | --------- | -------- |
+|                     | A               | B        | C        | D        | E         | F        |
+| Brutal Force Solver | 1.4505          | 1.4548   | 1.4521   | 1.4238   | 1.4501    | 1.4422   |
+|    Octree Solver    | 0.135787        | 0.162758 | 0.161032 | 0.129104 | 0.1443400 | 0.099773 |
 
 #### 2) Unknown case
 
@@ -359,9 +392,9 @@ The result is compared  with the "PA3-D-Debug-own-output.txt" and shown in the t
 
 <h6 align="center">TABLE 4 PA3-D-Debug-own-output</h6>
 
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922)<br/>   (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
+| OUR RESULTS                                                  | GIVEN RESULTS                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922)   (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
 
 ### 5.E-Debug
 
@@ -421,11 +454,11 @@ Jiaming Zhang developed method ; Chongjun Yang developed other methods of this P
 
 ## References
 
-[1] 
+[1] Jiaming Zhang, Chongjun Yang. PA1-REPORT
 
-[2] 
+[2] Jiaming Zhang, Chongjun Yang. PA2-REPORT
 
-
+[3] https://en.wikipedia.org/wiki/Octree
 
 
 
