@@ -1,0 +1,42 @@
+A:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4505672454833984 seconds
+Octree Solver time =
+                    0.1357870101928711 seconds
+
+B:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4548630714416504 seconds                                                                                         
+           INFO     Octree Solver time =
+                    0.16275882720947266 seconds 
+
+C:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4521090984344482 seconds
+Octree Solver time =
+                    0.1610329151153564 seconds
+
+D:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4238920211791992 seconds
+Octree Solver time =
+                    0.1291041374206543 seconds
+
+E:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4501559734344482 seconds
+Octree Solver time =
+                    0.14434003829956055 seconds
+
+F:
+----------------------------------------------
+Brute Force Solver time =
+                    1.4422638416290283 seconds
+Octree Solver time =
+                    0.09977316856384277 seconds
+            
