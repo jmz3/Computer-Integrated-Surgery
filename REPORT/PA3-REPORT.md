@@ -131,7 +131,7 @@ The code implemented in**"cispa/FindClosestPoint2Mesh.py"** and the test script 
 
 ### 4. Generate Bounding Spheres
 
-Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows. The scenario to find bounding sphere for each mesh triangle is shown as follows
+Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows. The scenario to find bounding sphere for each mesh triangle is shown as follows![IMG_3D3699888496-1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/IMG_3D3699888496-1.jpeg)
 
 Here we assume edge $\vec a-\vec b$ is the longest. Then the center $\vec q$ of the sphere will work as follows.
 $$
@@ -166,22 +166,7 @@ $$
 $$
 If$γ\leq0$ , then just pick $\lambda\leq0$. Otherwise, pick $\lambda=γ$.
 
-2. Simple Search with Bounding Spheres, the pseudo code of the algrithom is shown as follows.
-
-| Algorithm | Linear Search by Bounding Spheres         |
-| --------- | ----------------------------------------- |
-| Step. 1   | bound ←$∞$                                |
-| Step. 2   | **for** $i =$ 1 to number of triangles do |
-| Step. 3   | **if** $||q_i-a||-r_i\leq bound$ **then** |
-| Step. 4   | $c_i=||\vec d_k-\vec C_{k,i}^{nearest}||$ |
-| Step. 5   | **if**  $d_i\leq bound$  **then**         |
-| Step. 6   | bound←$d_i$                               |
-| Step. 7   | closest point←$c_{i}$                     |
-| Step. 8   | **end if**                                |
-| Step. 9   | **end if**                                |
-| Step. 10  | **end for**                               |
-
-#### 2) Code Implementation
+Code Implementation
 
 **2.1) Linear Search by Brute Force**
 
