@@ -1,6 +1,6 @@
  <h1 align="center">PA3-REPORT</h1>
 
-![Screen Shot 2022-10-25 at 9.07.17 PM](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screen Shot 2022-10-25 at 9.07.17 PM.png)
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screen Shot 2022-10-25 at 9.07.17 PM.png" alt="Screen Shot 2022-10-25 at 9.07.17 PM" style="zoom:225%;" />
 
 ## **I. Mathematics & Algorithms Implementation**
 
@@ -10,7 +10,7 @@ This section introduces the mathematical principles and implemented algorithm fo
 
 In the assignment of programming, a simplified version of Iterative Closest Point (ICP) has been developped. Our purpose is to find the closest points in the surface of the model to each point in the the point cloud. A naive search approach has been implemented, and the performance is tested based on the running time consumption. To speed up the searching process, we introduced  Octree structure. Both methods have been tested and validated based on given data.
 
-In the programming assignment, we use LED trackers to detect 2 rigid bodies and obtain the point cloud from intraoperative reality. The CT system could obtain the information of the 3D surface model. <img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screenshot 2022-11-20 at 3.03.26 AM.png" alt="Screenshot 2022-11-20 at 3.03.26 AM" style="zoom:50%;" />
+In the programming assignment, we use LED trackers to detect 2 rigid bodies and obtain the point cloud from intraoperative reality. The CT system could obtain the information of the 3D surface model. <img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Screenshot 2022-11-20 at 3.03.26 AM.png" alt="Screenshot 2022-11-20 at 3.03.26 AM" style="zoom:100%;" />
 
 The mathematical steps followed are described in this section.
 
@@ -127,9 +127,9 @@ The code implemented in**"cispa/FindClosestPoint2Mesh.py"** and the test script 
 |            | **ENDFOR**                                                   |
 | **RETURN** | [minimum distance, closest point]                            |
 
-
-
 ### 4. Generate Bounding Spheres
+
+#### 1) Mathematical Method
 
 Build bounding spheres around each triangle and with the help of these spheres, we could reduce the number of careful checks required. The working flow is as follows. The scenario to find bounding sphere for each mesh triangle is shown as follows![IMG_3D3699888496-1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/IMG_3D3699888496-1.jpeg)
 
@@ -166,57 +166,53 @@ $$
 $$
 If$γ\leq0$ , then just pick $\lambda\leq0$. Otherwise, pick $\lambda=γ$.
 
-Code Implementation
+#### 2) Code Implementation
 
-**2.1) Linear Search by Brute Force**
+The code implemented in **"/cispa/FindBoundingSphere.py"**. We use spheres to represent the triangles and did the same brute force search process.
 
-The code implemented in **"/PA3/pa3_.py"**.
+| Algorithm4  | Linear Search by Bounding Spheres         |
+| ----------- | ----------------------------------------- |
+| **Step**. 1 | bound ←$∞$                                |
+| **Step**. 2 | **for** $i =$ 1 to number of triangles do |
+| **Step**. 3 | **if** $||q_i-a||-r_i\leq bound$ **then** |
+| **Step**. 4 | $c_i=||\vec d_k-\vec C_{k,i}^{nearest}||$ |
+| **Step**. 5 | **if**  $d_i\leq bound$  **then**         |
+| **Step**. 6 | bound←$d_i$                               |
+| **Step**. 7 | closest point←$c_{i}$                     |
+| **Step**. 8 | **end if**                                |
+| **Step**. 9 | **end if**                                |
+| **Step** 10 | **end for**                               |
 
-```bash
+#### 
 
-```
-
-##### **2.2) Linear Search by Bounding Spheres**
-
-The code implemented in **"/PA3/pa3_.py"**.
-
-```bash
-
-```
-
-
-
-### 4 . Find Closest Point on Mesh - Octree Search
+### 5 . Find Closest Point on Mesh - Octree Search
 
 #### 1) Mathematical Method
 
-The algorithm for Octree Search has two main parts: the tree construction and the closest point detection.  We have implemented a Python according to the slides in the class.
+The algorithm for Octree Search has two main parts: the tree construction and the closest point detection.  Since the octree is a pure data structure, hence we demonstrate the method directly through pseudocode. We have implemented a Python according to the slides in the class.
 
-| Algorithm | Octree Search                                                |
-| --------- | ------------------------------------------------------------ |
-| Step. 1   | Import all triangles                                         |
-| Step. 2   | Compute bounding spheres for all triangles                   |
-| Step. 3   | Find Centroid Point                                          |
-|           | N triangles w.r.t N spheres with its own center and radius; Add all N centers together and then divided by N to find the Centroid Point of the sphere |
-| Step. 4   | Split the Spheres into 8 quadrants                           |
-|           | Compare Sphere.Center.x and Centroid Point.x:  if Sphere.Center.x<Centroid Point.x, divide the Sphere into 2 parts; |
-|           | Compare Sphere.Center.y and Centroid Point.y: if Sphere.Center.y<Centroid Point.y, divide the Sphere into 2 parts; |
-|           | Compare Sphere.Center.z and Centroid Point.z: if Sphere.Center.z<Centroid Point.z, divide the Sphere into 2 parts; |
-| Step. 5   | Generate Subtrees                                            |
-| Step. 6   | Find Closest Subtree                                         |
-| Step. 7   | Generate Bounding Box                                        |
-|           | ...                                                          |
-|           | **if**  Subtree.length < 2                                   |
-|           | **endif**                                                    |
+| Algorithm5 | Octree Search                                              |
+| ---------- | ---------------------------------------------------------- |
+| **INPUT**  | Mesh, tip point $d_k$                                      |
+| **OUTPUT** | Closest point                                              |
+|            | **CALL** Octree(mesh) to generate an octree for given mesh |
+|            | **CALL** FindClosestPoint to find the closest subtree      |
+|            | **CALL** UpdateClosest                                     |
+
+And the octree follows the given process:
+
+|   Algorithm 6   | Octree |
+| ---- | ---- |
+|            | Split the Spheres into 8 quadrants                           |
+|            | According to the center position, keep dividing the Sphere into 8 parts; |
+|            | Keep generating subtrees until the subtree only contains 1 sphere, i.e. |
+|            | **if**  Subtree.length < 2                                   |
+|            | **endif**                                                    |
 
 
 #### 2) Code Implementation
 
-The code implemented in **"/PA3/pa3_.py"**.
-
-```
-
-```
+The octree generation part implemented in **"/cispa/octree.py"**. To call the octree object, we use an octree object to perform the FindClosestPoint2Mesh process, which is **"/cispa/FindClosestPoint2Mesh.py"**. 
 
 
 
@@ -228,21 +224,21 @@ The overall structure for the ../PROGRAMS folder is described as follows:
     ├── **PA3**			  # Test scripts are contained in this directory
     │   ├── **Data**	   # This DIR contains all the provided data
     │   ├── **output**	# This DIR contains all the result of our program
-    │   ├── **pa3_main.py**				# This is the main process that output the result 
-    │   ├── **pa3_compute_dk_test.py**	  # compute the sample points input file
+    │   ├── **pa3_main.py**					# This is the main process that output the result 
+    │   ├── **pa3_compute_dk_test.py**	  # compute the tip point 
     │   ├── **pa3_find_closest_on_triangle.py** 
-    │   ├── **pa3_octree_search_test.py**
-    │   └── **pa3_linear_search_test.py**	 # Linear search test to find closest point on mesh
-    └── **cispa** 			# Utility Functions are contained in this directory
+    │   ├── **pa3_octree_search_test.py**	# Octree search to find closest point on mesh
+    │   └── **pa3_linear_search_test.py**	 # Linear search to find closest point on mesh
+    └── **cispa** 											# Utility Functions are in this directory
         ├── **CarteFrame.py**
         ├── **ComputeExpectValue.py** 
         ├── **CorrectDistortion.py** 	
-        ├── **DataProcess.py** 				# Import and Export Data
+        ├── **DataProcess.py** 						# Import and Export Data
         ├── **FindBoundingSphere.py**
-        ├── **FindClosestPoint2Mesh.py** 	# Find the closest point on the mesh to point P.
-        ├── **FindClosestPoint2Triangle.py**	# Find the closest point on the triangle to P.
+        ├── **FindClosestPoint2Mesh.py**		# Find the closest point on the mesh to point
+        ├── **FindClosestPoint2Triangle.py**	# Find the closest point on the triangle
         ├── **HomoRepresentation.py**
-        ├── **Octree.py** 							# Generate the octree based on given mesh
+        ├── **Octree.py**								# Generate the octree based on given mesh
         ├── **PivotCalibration.py**
         └── **Registration.py**				
 
@@ -261,39 +257,85 @@ $ ls
 PA3   cispa
 ```
 
-**Dear Graders**, Before starting to run our code, please remember keep matplotlib in your virtual environment. 
+**Dear Graders**, Before starting to run our code, please remember to install **matplotlib** in your virtual environment. 
 
-### 1. Verification for Compute dk Test
+### 1. Compute dk Unit Test 
 
-This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_compute_dk_test.py". In the terminal, run the following command:
-
-```bash
-
-```
-
-### 2. Verification for Linear Search Test
-
-This script is to use to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_linear_search_test.py". In the terminal, run the following command:
+This script is implement to compute the tip positions w.r.t. B body frame for all LED data frames. In the ../PROGRAMS directory, run test script "/PA3/pa3_compute_dk_test.py". In the terminal, run the following command:
 
 ```bash
-
+$ python3 /PA3/pa3_compute_dk_test.py
+INFO     dk for PA3-A-Debug data:                                                                 
+                    [[  5.75770718  19.75264402  -3.01776797]           
+                     [ 17.90665894  25.32838102 -18.84286624]
+                     [-39.30008812 -22.32569893 -30.75256506]
+                     [ -9.82756727 -13.44235012  -1.22125489]
+                     [-24.99293076 -28.7577944  -38.54036667]
+                     [-41.37003445 -14.70559823 -29.90157133]
+                     [ 33.83443216  16.2533508    7.01085956]
+                     [ -2.48501569  -7.41132429  29.48201166]
+                     [ 26.65360204  23.29655741 -10.08941296]
+                     [  3.48440717   8.81466607 -14.49922852]
+                     [-22.84699817 -12.85719931 -48.78797397]
+                     [ 23.77236338  -6.19173927  13.76863119]
+                     [ -6.24773552  10.3658506    2.06087393]
+                     [-39.00797053 -17.63316542 -14.57114666]         
+                     [-24.84466034 -11.01359415  -6.08798191]] 
 ```
 
-#### 1) Verification for Compute Bounding Sphere(vertex)
+Compare the result to given answer, we can see our code is correct.
 
-As shown in Fig.6. , the input vertices form a triangle in the x-y plane. The bounding sphere from our unit test program is consistent with the geometric relationship in the Fig.6.
+### 2. Closest Point on Triangle Unit Test
+
+This script is to find closest point for a given point and a given triangle. In the ../PROGRAMS directory, run test script "/PA3/pa3_find_closest_on_triangle.py". In the terminal, run the following command:
 
 ```bash
-
+$ python3 PA3/pa3_find_closest_on_triangle.py
 ```
 
-#### 2) Verification for Compute Closest Point(point, vertex)
+And we use matplotlib to demonstrate our result:
 
-To test the effectiveness of the function, we conduct for 4 situations,  where $\vec c$ in the inside of the triangle,  $\vec c$ in the outside of the triangle,  $\vec c$ in the vertices of the triangle and  $\vec c$  on the side of the triangle.  We could visualize the results  from the test function.
+![Figure_1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_1-8991031.png)
+
+The sphere is a little bit distorted due to the unequal axis range. But as we can see, the result closest point is correct.
+
+### 3. Linear Search Unit Test
+
+This script is used to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_linear_search_test.py". In the terminal, run the following command:
 
 ```bash
-
+$ python3 /PA3/pa3_linear_search_test.py
 ```
+
+To demonstrate the result, we plotted the triangle and the point together with the corresponding closest point.
+
+![Figure_2](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_2.png)
+
+### 4. Compute Bounding Sphere Unit Test
+
+This script is designed to check whether the Bounding Sphere for one given triangle is correctly generated. 
+
+```bash
+$ python3 PA3/pa3_single_sphere_test
+[0.5 0.5 0. ]
+0.7071067811865476
+```
+
+Here we use the triangle with three vertices, which are [[0, 0, 0], [1, 0, 0], [0, 1, 0]]. Through simple inspection, we can see that our result is correct.
+
+### 5 Octree Search Unit Test
+
+We generate a octree based on the given triangular mesh. And then we perform octree search. In the ../PROGRAMS directory, run test script "/PA3/pa3_octree_search_test.py". In the terminal, run the following command:
+
+```bash
+$ python3 PA3/pa3_octree_search_test.py
+```
+
+To demonstrate the result, we plotted the triangle and the point together with the corresponding closest point.
+
+![Figure_3](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_3.png)
+
+By simple inspection, we can see that our result is correct.
 
 ### 3. Discussion for the results of finding point pairs in different cases
 
@@ -302,18 +344,18 @@ To test the effectiveness of the function, we conduct for 4 situations,  where $
 Table 1 shows us  a quantitative evaluation of various proposed methods to find the
 closest points. For both the Debug and Unknown cases, we compared the running time of the four methods to demonstrate the efficiency improvement.
 
-In Table 2 , 'BoundSp' denoting the Bounding Sphere Search demonstrates the highest  speed in computing the paired points. Except for the KDtree, all the advanced methods improved the computation efficiency comparing with the naive Brutal search. Because a KDtree pipeline has to find all the closest points on single triangle mesh beforehand, the method has to repeat this step and thus  requires about 0.7s in this dataset when dealing with each point of the point cloud and efficiency has been degraded largely.  Secondly, compared with the Brutal Search, though the Octree Search has largely reduced running time, Bounding Sphere Search still performs better than the Octree Search Method. This could be caused by the performance in the implementation of python. During the process of the tree construction, there would be a series of calling and assignment operations for List type limiting the efficiency of Octree.
+In Table 2 , compared with the Brutal Search, the Octree Search has largely reduced running time. Beside the octree generation time comsuption, the search process only takes 10% of time for the brute force search. This could be caused by the performance in the implementation of python. During the process of the tree construction, there would be a series of calling and assignment operations for List type limiting the efficiency of Octree.
 
 **Table 1**: Quantitative evaluation of the proposed methods' accuracy.  All the  methods come to same accuracy. The error has been computed in  <u>L2 Norm</u>
 
-| Case | $d$ error | $c$ error | $mag$ error |
-| :--: | :-------: | :-------: | :---------: |
-|  A   |           |           |             |
-|  B   |           |           |             |
-|  C   |           |           |             |
-|  D   |           |           |             |
-|  E   |           |           |             |
-|  F   |           |           |             |
+| Case | $d$ error | $c$ error |
+| :--: | :-------: | :-------: |
+|  A   |  0.0053   |  0.0061   |
+|  B   |  0.0054   |  0.0056   |
+|  C   |  0.0061   |  0.0062   |
+|  D   |  0.0087   |  0.0067   |
+|  E   |  0.0081   |  0.0078   |
+|  F   |  0.0082   |  0.0073   |
 
 **Table 2**:  Comparison of various methods in running time for Debug case A-F
 
@@ -332,12 +374,11 @@ method performs better than the Bounding Sphere Search method.
 
 **Table 3**:  Comparison of various methods in running time for Debug case G-K
 
-|  Method  | Running time(s) |      |      |      |
-| :------: | --------------- | ---- | ---- | ---- |
-|          | G               | H    | I    | J    |
-|  Brutal  |                 |      |      |      |
-| BoundSp* |                 |      |      |      |
-|  Octree  |                 |      |      |      |
+|       Method       | Time(s)  |          |          |          |
+| :----------------: | -------- | -------- | -------- | -------- |
+|                    | G        | H        | I        | J        |
+| Brute Force Solver | 1.4533   | 1.4526   | 1.4563   | 1.4601   |
+|   Octree Solver    | 0.145598 | 0.139905 | 0.125763 | 0.173482 |
 
 ## IV. Result and Discussions
 
@@ -347,9 +388,11 @@ The result is compared  with the "PA3-A-Debug-own-output.txt" and shown in the t
 
 <h6 align="center">TABLE 1 PA3-A-Debug-own-output</h6>
 
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | (17.90666   25.32838  -18.84287   17.90731   25.32410  -18.84304    0.00434)<br/>( -39.30009  -22.32570  -30.75257  -39.30331  -22.32773  -30.75337    0.00389)<br/>  (-9.82757  -13.44235   -1.22125   -9.82755  -13.44231   -1.22128    0.00005)<br/> | (17.91    25.32   -18.84        17.91    25.32   -18.84     0.000)<br/>  (-39.30   -22.33   -30.75       -39.30   -22.33   -30.75     0.000)<br/>   (-9.83   -13.44    -1.22        -9.83   -13.44    -1.22     0.000)<br/> |
+| OUR RESULTS  | GIVEN RESULTS                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (17.90666   25.32838  -18.84287   17.90731   25.32410  -18.84304    0.00434)| (17.91    25.32   -18.84        17.91    25.32   -18.84     0.000)|
+|( -39.30009  -22.32570  -30.75257  -39.30331  -22.32773  -30.75337    0.00389)| (-39.30   -22.33   -30.75       -39.30   -22.33   -30.75     0.000)|
+|(-9.82757  -13.44235   -1.22125   -9.82755  -13.44231   -1.22128    0.00005) | (-9.83   -13.44    -1.22        -9.83   -13.44    -1.22     0.000) |
 
 ### 2.B-Debug
 
@@ -379,7 +422,7 @@ The result is compared  with the "PA3-D-Debug-own-output.txt" and shown in the t
 
 | OUR RESULTS                                                  | GIVEN RESULTS                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922)   (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
+| (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922) <br/>  (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
 
 ### 5.E-Debug
 
@@ -430,6 +473,10 @@ The result is compared  with the "PA3-J-Unknown-own-output.txt" and shown in the
 |      | OUR RESULTS                                                  |
 | ---- | ------------------------------------------------------------ |
 |      | (21.48054   -0.92945   49.72730   20.59832   -0.49203   49.58690    0.99467)<br/>   (25.36021    6.03934   25.74393   27.53223    5.82745   26.43426    2.28892)<br/>    (8.03087   10.08615  -11.70728    7.97719   10.55353  -11.99916    0.55365)<br/> |
+
+### 10. Discussion
+
+The result for Debug-A to F is pretty accurate, the maximum error is limited to 0.001 level. And there exists slightly difference observed between Answer data and Output data. According to the PA instruction, there might be some noise in the data.
 
 ## Contributions
 
