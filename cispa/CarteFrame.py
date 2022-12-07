@@ -58,9 +58,11 @@ if __name__ == "__main__":
     print(F.p)
     print(pow(2,3))
 
-    poly = np.array([1,2,3,4,5,6])
-    poly.reshape(6,1)
-    T = np.zeros((6,3))
+    F.R = np.array([[-1,0,0],[0,0,-1],[0,-1,0]])
+    print(F.R)
+    # poly = np.array([1,2,3,4,5,6])
+    # poly.reshape(6,1)
+    # T = np.zeros((6,3))
 
-    T[:,0] = [poly[i] for i in range(6)]
-    print(T)
+    # T[:,0] = [poly[i] for i in range(6)]
+    # print(T)

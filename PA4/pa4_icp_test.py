@@ -53,7 +53,12 @@ def main(data_dir, output_dir, name):
 
     Nvertex, vertex, Nface, face_idx = DP.load_mesh_data(mesh_path)
     face_idx = face_idx[:, :3].astype(int) # type conversion to int
-    face_idx = face_idx # index starts from 0
+    mesh = {}
+    mesh['vertex'] = vertex
+    mesh['Nface'] = Nface
+    mesh['face_idx'] = face_idx
+
+
 
 
     ############################################################################
@@ -104,25 +109,15 @@ def main(data_dir, output_dir, name):
     d_tip = np.concatenate(d_tip, axis = 1).T
     dk = d_tip
 
-    ############################################################################
-    ############### Visualization for dk and the surface mesh ##################
-    ############################################################################
-    fig = plt.figure()
-    plt.set_loglevel('info')
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(dk[:,0],dk[:,1],dk[:,2], c = 'r', marker = 'o')
-    ax.scatter(vertex[:,0], vertex[:,1], vertex[:,2], c = 'b', alpha=0.2)
-    plt.show()
-    # log.info(f"dk for {name} data: {d_tip}")
 
-    
     ############################################################################
     ############## Perform Iterative Closest Point here ########################
     ############################################################################
     # Initialize the ICP object
-    # ICP_ = ICP(threshold=[0.01, 0.01, 0.01], max_iter=100)
-    # Closest2Mesh_ = FindClosestPoint2Mesh(vertex, Nface, face_idx) # initialize an object of FindClosestPoint2Mesh
 
+    ICP_ = ICP(mesh, threshold=[0.01, 0.01, 0.01], max_iter=100)
+    F = ICP_.compute_icp_transform(dk)
+    print(F.R)
     # brute_result = []
     # octree_result = []
     # start = time.time()
@@ -144,6 +139,19 @@ def main(data_dir, output_dir, name):
     # ck = np.concatenate(ck,axis = 0) # Concatenate list members 
     # ck = np.reshape(ck,(Nframes, 3)) # Transfer to ndarray
 
+
+    ############################################################################
+    ############### Visualization for dk and the surface mesh ##################
+    ############################################################################
+    fig = plt.figure()
+    plt.set_loglevel('info')
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(dk[:,0],dk[:,1],dk[:,2], c = 'r', marker = 'o')
+    ax.scatter(vertex[:,0], vertex[:,1], vertex[:,2], c = 'b', alpha=0.2)
+    plt.show()
+    # log.info(f"dk for {name} data: {d_tip}")
+
+
     # ############################################################################
     # ###################### Output the result ###################################
     # ############################################################################
@@ -162,9 +170,25 @@ def main(data_dir, output_dir, name):
 
 
 if __name__=="__main__":
-    # main()
-    if isinstance(a):
-        print('yes')
+    main()
+    # container = {}
+    # container['vertex'] = np.array([[1,2,3],[4,5,6],[7,8,9]])
+    # container['face_idx'] = np.array([[1,2,3]])
+    # print(container)
+
+    # a = np.array([[[1,2,3]],[[4,5,6]],[[7,8,9]]])
+    # print(a.shape)
+    # A = []
+    # for i in a:
+    #     A.append(i)
+    
+    # print(A)
+    # Ap = np.asarray(A).reshape((3,3))
+    # print(Ap.shape)
+    # a = 1
+    # b = 2
+    # c = a <= b
+    # print(c)
     # a = np.array([[1,2,3],[4,5,6],[7,8,9]])
     # for i in a:
     #     print(i)
