@@ -206,6 +206,7 @@ class Octree:
         if dist < update_container['bound']:
             update_container['bound'] = dist
             update_container['closest_point'] = closest_point
+            print("min dist: ", update_container['bound'])
 
 if __name__=="__main__":
     P = np.array([1, 0, 0.25])

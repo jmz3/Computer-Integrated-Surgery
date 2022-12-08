@@ -6,147 +6,112 @@
 
 This section introduces the mathematical principles and implemented algorithm for locating the closest point to a given mesh file described in Programming Assignment 4.
 
-### 0. Scienario
+### 0. Scenario
 
-In this programming assignment, our purpose is to compute the registration transformation $F_{reg}$ using Iterative Closest Point (ICP). During the step of finding the closest triangle in ICP algorithm, We respectively implemented Brute-Force Search, Simple Bounding Sphere Search, and Octree Search. We also compared their performance in boosting the search efficiency.
+In this programming assignment, we are required to compute the registration transformation $F_{reg}$ using Iterative Closest Point (ICP). We use LED trackers to detect 2 rigid bodies on the bone and obtain the point cloud from intraoperative reality. The CT system could obtain information of the 3D surface model. By finding the transformation matrix between the preoperative surface mesh and intraoperative point cloud we can derive the frame transformation between the CT frame and Bone frame. While finding the closest triangle in the ICP algorithm, we implemented Brute-Force Search and Octree Search to determine the closest points. We also compared their performance in terms of searching efficiency.
 
-1. Matching
-
-   For every $F_{reg}$ \vec q_{tip}, where\vec q_{tip} is the point in the point cloud, use *FindClosestPoint*() to find the matching triangles and the closest distance. Note that we assume the rotation and translation part of $F{reg}$  are *$I$* and $[0 0 0]^T$ , respectively, in the first iteration. Also, we conduct robust pose estimation in this step to filter out the outliers.
-
-2. Transformation update
-
-   After getting the point pairs in the last step, the 3D to 3D point cloud registration package developed previously to update the  $F_{reg}$. Meanwhile, we compute three residual-error-related parameters, which are used to evaluate whether terminate this loop in the future step.
-
-3. Adjustment
-
-   Update threshold $η_{n}$. This parameter is used in matching step (robust pose estimation) to restrict the influence of clearly wrong matches on the computation of  $F_{reg}$.
-
-4. Iteration
-
-   If the current $F_{reg}$ satisfies the termination condition, this $F_{reg}$ is our result. If not, go to next iteration.
+<img src="/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/Screenshot 2022-11-20 at 3.03.26 AM.png" alt="Screenshot 2022-11-20 at 3.03.26 AM" style="zoom:150%;" />
 
 
 
-### 1. Matching
+
+
+### 1. Iterative Closest Point Method
 
 #### 1) Mathematical Method
 
-In the matching step, the algorithm identifies the closest pair between the points cloud and surface model. As introduced in PA3, we implement three searching methods to solve this task, namely Octree, Bouding Sphere Search and Brute Force Search methods. With the algorithm proceeds, the ‘bound’ is iteratively reduced as the followed formulation:
-$$
-bnd_k = ||F_{n}·\vec q_{k}- \vec c_{k}||
-$$
-where $F_{n}$ denotes the $F_{reg}$  updated in the previous iteration, $\vec q_{k}$ is the k-th point in point cloud and  $\vec c_{k}$ is the corresponding closest needlepoint on surface model in previous match. With such a tighter bound, the speed of ICP algorithm can be significantly improved.
+1) Find Corresponding Point Pairs
 
-Then we use the search method to search the closest point on surface model for each element in the point cloud. In this assignment, as a default option, we adopt the Octree searching method taught in the class. In addition to the closest point coordinates, the algorithm also saves the distance of each point pairs.
+   Since we are finding the transformation between a point cloud and a surface mesh, the algorithm needs to identify the closest pair between the points cloud and surface mesh in the first place. 
 
-Another difference with PA3 is the robust estimation part. With the iteration proceeding, we can leverage the distance values of each point pairs and their residual errors serving as thresholds to filter out some clearly wrong matches.
+   Then we use the search method to search for the closest point on the surface mesh for each element in the point cloud, i.e., find the closest points on the surface corresponding to $F_{reg}q_k$
+
+   As introduced in PA3, we implemented Brute Force Searching and Octree Searching methods to solve this problem. Here we use $F_{n}$ to denote the $F_{reg}$  updated in the previous iteration, $\vec q_{k}$ is the k-th point in the point cloud and  $\vec c_{k}$ is the corresponding closest needlepoint on the surface mesh in the previous corresponding process.
+
+   Note that we assume that $F{reg}$ is identity matrix as the initial guess. 
+
+2. Find Best Transformation
+
+   After we found the updated closest corresponding point pair. We can utilize the registration function that we implemented in the PA1 to find the transformation that minimizes the total errors between the given point cloud and the closest cloud as Eq 1 shows. After updating the registration transformation, we calculate residuals for each transformed point with the corresponding closest needlepoint. Then we can compute the residual error based on the values shown as Eq 2-5: And update the termination conditions according to the following functions:
+
+   $$
+   \hat R = \underset{R}{\operatorname{argmax}} \sum ||p_{ic}' - Rp_{ic}||^2
+   $$
+
+$$
+\vec e_k = F_{reg}\vec q_k - \vec c_k \\
+$$
+
+$$
+\sigma_n = \frac {\sqrt{\Sigma \vec e_k \cdot \vec e_k} }{NumElts(A)}
+$$
+
+$$
+\epsilon_{max} = \underset{k}{max} \sqrt{\vec e_k \cdot \vec e_k}
+$$
+
+$$
+\bar \epsilon_n = \frac {\Sigma \sqrt{\vec e_k \cdot \vec e_k}} {NumElts(A)}
+$$
+
+
+
+3. Adjusting the Boundary for Outliers
+
+   As the iteration proceeds, we can leverage the distance values of each point pair and their residual errors serving as thresholds to filter out some clearly wrong matches.
+
+4. Check Termination Condition
+
+   Check for the error metrics. If the average and variance of the errors are small enough, and the max errors are also small enough, stop the iteration and return the current $F_{reg}$. If the termination condition isn't satisfied, go to step 1 and revisit the whole process.
+
+   Remember, in the next iteration, using $F_{reg}q_k$ to find the closest points $c_k$; using $q_k$ and $c_k$ to update $F_{reg}$
 
 #### 2) Code Implementation
 
-The code implemented in **"/PA4/pa4_compute_dk_test.py"**. The basic steps are:
+The code is implemented in **"/cispa/IterClosestPoint.py"**. The basic steps are:
 
-| Algorithm 1 | Compute dk                                                   |
+| Algorithm 1 | Compute $F_{reg}$                                      |
 | ----------- | ------------------------------------------------------------ |
-| **Input**:  | Point Clouds: LED readings $A_k$ and $B_k$ , rigid body description file $A$ and $B$ |
-| **Output**: | $A_{tip}$ position w.r.t. $B$ body frame, i.e. $d_k$ |
-|  | Load $A_k$ , $B_k$ , $A$ and $B$ |
-|  | **FOR** each frame in { $A_k , B_k$} |
-|  | **CALL** $F_{A,k}$ = Registration($A_k$ , $A$) $F_{B,k}$ = Registration($B_k$ , $B$) |
-|  | **COMPUTE** $\vec d_k = F_{B,k}^{-1} F_{A,k} \vec A_{tip}$ |
-|  | **ENDFOR** |
+| **Input**:  | Point Cloud $Q$ and Surface Mesh $M$ |
+| **Output**: | $F_{reg}$: The frame transformation between Q and M |
+|  |  |
+| **Initialize:** | $F_{reg} = I_{4 \times 4}$ ; n = 0 |
+| **STEP 1:** | A = $\empty$ ; B = $\empty$ |
+|  | **FOR** each point $q_k$ in $Q$ |
+| | &nbsp;&nbsp;**CALL** [ $c_k$, $d_k$ ] = **CorrespondPoints**($q_k$ , $M$ , search_method) |
+| | **ENDFOR** |
+| | **IF** $d_k < \eta_n$ |
+| | &nbsp;&nbsp;A.pushback($q_k$) ; B.pushback($c_k$) |
+| |  |
+| **STEP 2:** | n += 1  #**Comment**: Iteration Count |
+| | **CALL** $F_{reg}$ = **Registration**($A$ , $B$ ) |
+| | **CALL** Update Termination Conditions |
+| |  |
+| **STEP 3:** | **COMPUTE** $\eta_n$ |
+|  |  |
+| **STEP 4:** | **IF** Termination Condition == False |
+|  | &nbsp;&nbsp;**GO TO** STEP 1                                 |
+|                 | **ELSE**                                                     |
+|                 | &nbsp;&nbsp;**RETURN** $F_{reg}$                             |
 
+The **CorrespondPoints** method is done by calling find_closest_point function developed in previous PA. The code is implemented in **"/cispa/IterClosestPoint.py"**. The basic steps are:
 
-
-### 2. Transformation Update
-
-#### 1) Mathematical Method
-
-With the matched point pairs, we adopted the 3D point-cloud-to-point-cloud registration method introduced in PA1 and PA2 to compute the best transformation. After updating the registration transformation, we calculate residuals for each transformed point with the corresponding closest needle point. Then we can compute the residual error based values shown as following:
-$$
-σ =\sqrt{(\sum_k\vec e·\vec e}/k
-$$
-
-$$
-ε_{max} =max_k\sqrt{\vec e_{k}·\vec e_{k}}
-$$
-
-$$
-ε =\sum_k\sqrt{\vec e_{k}·\vec e_{k}}/k
-$$
-
-where $\vec e_{k}$ denote residual vector for the k-th point pair.
-
-#### 2) Code Implementation
-
-The code implemented in **"/cispa/FindClosestPoint2Triangle.py"** and the test script is developped in **"/PA4/pa4_find_closest_on_triangle.py"**. The steps are as following:
-
-| Algorithm 2 | Find Closest Point to Triangle                               |
+| Algorithm 2 | Find Corresponding Point Pairs                               |
 | ----------- | ------------------------------------------------------------ |
-| **Input**:  | Point $a$ and Triangle $T = \{p,q,r\}$                       |
-| **Output**: | Closest Point $h$                                            |
-|             | **CALL** $ \begin{bmatrix} \lambda & \mu\end{bmatrix}^T$ = LeastSquare($\begin{bmatrix} \vec q-\vec p & \vec r-\vec p \end{bmatrix} ,  \vec a-\vec p$) |
-|             | **COMPUTE**: $h$ = $ p + \lambda (q-p) + \mu(r-p)$           |
-|             | **IF** $\lambda < 0$:                                        |
-|             | &nbsp; $h$ = ProjectOnSegment($h,r,p$)                       |
-|             | **ELIF** $\mu < 0$:                                          |
-|             | &nbsp; $h$ = ProjectOnSegment($h,p,q$)                       |
-|             | **ELIF** $\lambda + \mu > 1$:                                |
-|             | &nbsp; $h$ = ProjectOnSegment($h,q,r$)                       |
-|             | **ENDIF**                                                    |
-| **RETURN**: | $h$ is the closest point on the triangle                     |
+| **Input**:  | Source Point $q_k$ , Surface Mesh $M$ , Search Method = {'Brute', 'Octree'} |
+| **Output**: | Closest point , Minimum Distance                             |
+|             | **IF** Search Method == 'Brute'                              |
+|             | &nbsp;&nbsp;Closest point , Minimum Distance = BruteForceSolver($q_k$) |
+|             | **ElSE IF** Search Method == 'Octree'                        |
+|             | &nbsp;&nbsp;Closest point, Minimum Distance = OctreeSolver($q_k$) |
 
+With the matched point pairs, we adopted the 3D point-cloud-to-point-cloud registration method introduced in PA1 and PA2 to compute the best transformation. 
 
-
-### 3.Adjustment
-
-#### 1) Mathematical Method
-
-In order to realize robust pose estimation in the matching step, we need a threshold $η_{n}$  to filter out the wrong pairs. Here we adopt 3$ε_{n}$ as this threshold. In practice, the setting of $η_{n}$ is very tricky. On the on one hand, too tight threshold might delete some matching pairs that are actual correct. On the other hand, too loose threshold might not filter out the wrong pairs.
-
-#### 2) Code Implementation
-
-The code implemented in**"cispa/FindClosestPoint2Mesh.py"** and the test script is  **"/PA4/pa4_linear_search_test.py"**.
-
-| Algorithm3 | Linear Search by Brute Force                                 |
-| ---------- | ------------------------------------------------------------ |
-| **INPUT**  | Vertices Coordinates and Triangle Indices                    |
-| **OUTPUT** | A tuple that contains closest point and its corresponding distance |
-|            | minimum distance = $\infty$                                  |
-|            | **FOR** $i =$ index of the triangles                         |
-|            | &nbsp; **CALL**: $\vec C_{k,i}^{nearest}$ = FindClosestPoint2Triangle($\vec d_k$, $triangle_i$) |
-|            | &nbsp; $\vec d_k=||\vec d_k-\vec C_{k,i}^{nearest}||$        |
-|            | &nbsp; **IF** $\vec d_k\leq$minimum distance **then**        |
-|            | &nbsp; &nbsp; minimum distance =$\vec d_k$                   |
-|            | &nbsp; &nbsp; closest point = $\vec C_{k,i}^{nearest}$       |
-|            | &nbsp; **ENDIF**                                             |
-|            | **ENDFOR**                                                   |
-| **RETURN** | [minimum distance, closest point]                            |
-
-### 4 Iteration
-
-#### 1) Mathematical Method
+There might be some outlier points in the source point cloud, so we need a threshold $η_{n}$  to filter out the wrong pairs. Here we adopt 3$ε_{n}$ as this threshold. In practice, the setting of $η_{n}$ is very tricky. On the one hand, a strict threshold might delete some matching pairs that are actually correct. On the other hand, a loose threshold might not filter out the wrong pairs.
 
 The criterion of termination we adopted is to stop the iteration when $σ_{n}$  , $ε_n$, $(ε_max)_n$ are less than desired thresholds (all take 0.01) and $γ ≤ ε_n/ε_{n−1}≤ 1$. Here we assume that γ = 0.95.
 
-#### 2) Code Implementation
 
-The code implemented in **"/cispa/FindBoundingSphere.py"**. We use spheres to represent the triangles and did the same brute force search process.
-
-| Algorithm4  | Linear Search by Bounding Spheres         |
-| ----------- | ----------------------------------------- |
-| **Step**. 1 | bound ←$∞$                                |
-| **Step**. 2 | **for** $i =$ 1 to number of triangles do |
-| **Step**. 3 | **if** $||q_i-a||-r_i\leq bound$ **then** |
-| **Step**. 4 | $c_i=||\vec d_k-\vec C_{k,i}^{nearest}||$ |
-| **Step**. 5 | **if**  $d_i\leq bound$  **then**         |
-| **Step**. 6 | bound←$d_i$                               |
-| **Step**. 7 | closest point←$c_{i}$                     |
-| **Step**. 8 | **end if**                                |
-| **Step**. 9 | **end if**                                |
-| **Step** 10 | **end for**                               |
-
-#### 
 
 ## **II. Overall Structure**
 
@@ -294,7 +259,7 @@ In Table 2 , compared with the Brutal Search, the Octree Search has largely redu
 |       Method        | Time(s) | | | | | |
 | :-----------------: | --------------- | -------- | -------- | -------- | --------- | -------- |
 |                     | A               | B        | C        | D        | E         | F        |
-| Brutal Force Solver | 1.4505          | 1.4548   | 1.4521   | 1.4238   | 1.4501    | 1.4422   |
+| Brutal Force Solver | 8.0982     | 405.4058 | 700.1229 | 745.9486 | 1.4501    | 1.4422   |
 |    Octree Solver    | 0.135787        | 0.162758 | 0.161032 | 0.129104 | 0.1443400 | 0.099773 |
 
 #### 2) Unknown case
@@ -308,8 +273,8 @@ method performs better than the Bounding Sphere Search method.
 
 |       Method       | Time(s)  |          |          |          |
 | :----------------: | -------- | -------- | -------- | -------- |
-|                    | G        | H        | I        | J        |
-| Brute Force Solver | 1.4533   | 1.4526   | 1.4563   | 1.4601   |
+|                    | G        | H        | J        | K        |
+| Brute Force Solver | 682.0382 | 847.2487 | 1.4563   | 1.4601   |
 |   Octree Solver    | 0.145598 | 0.139905 | 0.125763 | 0.173482 |
 
 ## IV. Result and Discussions
@@ -478,7 +443,4 @@ search methods based ICP algorithm of this PA. Both team member complete a part 
 [4] J. Yang, H. Li, and Y. Jia, “Go-icp: Solving 3d registration efficiently and globally optimally,” in
 2013 IEEE International Conference on Computer Vision, 2013, pp. 1457–1464
 
-[5] P. Besl and N. D. McKay, “A method for registration of 3-d shapes,” IEEE Transactions on Pattern
-Analysis and Machine Intelligence, vol. 14, no. 2, pp. 239–256, 1992.
-
-[6] https://en.wikipedia.org/wiki/Octree
+[5] https://en.wikipedia.org/wiki/Octree

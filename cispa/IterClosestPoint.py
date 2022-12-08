@@ -30,7 +30,7 @@ class ICP(object):
         self.face_idx = surface_mesh['face_idx']
         self.fcp_ = FindClosestPoint2Mesh(self.vertex, self.Nface, self.face_idx)
     
-    def correspond_points(self, source_point, bound):
+    def correspond_points(self, source_point, bound, search_method='BruteForce'):
         """
         Find the closest point in the given mesh to the given source_point
         Param:
@@ -44,76 +44,105 @@ class ICP(object):
         # size check 
         if source_point.shape != (1,3):
             raise ValueError("Input must be a (1,3) numpy array")
-        closest_points, min_dist = self.fcp_.BruteForceSolver(source_point)
-        closest_points = np.reshape(closest_points, (1,3))
+        
+        # Using Brute Force to find the closest point
+        if search_method == 'BruteForce':
+            closest_points, min_dist = self.fcp_.BruteForceSolver(source_point)
+            closest_points = np.reshape(closest_points, (1,3))
+        
+        elif search_method == 'Octree':
+            closest_points, min_dist = self.fcp_.OctreeSolver(source_point)
+            closest_points = np.reshape(closest_points, (1,3))
+
         return closest_points, min_dist
 
 
-    def compute_icp_transform(self, source_cloud):
+    def compute_icp_transform(self, source_cloud, search_method='BruteForce'):
         """
         Compute the transformation matrix Freg
         Param:
         ---------------------------------------------------------------------------
             source_cloud: (N,3) numpy array, the point set of the source point cloud
+            search_method: string, the method used to find the closest point in the surface mesh
     
         Return:
         ---------------------------------------------------------------------------
             Freg: 4x4 Homogeneous Transformation Matrix, Current estimated transformation
         """
         Freg = CarteFrame() # Initial transformation as identity matrix
+        Ftemp = CarteFrame() # Temporary transformation as identity matrix
         ita = 100.0 # Initial threshold for distance
         iter = 0
+        eps_bar_sequence = []
 
         while (iter<self.max_iter):
+            temp_cloud = []
             A = []
             B = []
+            error, error_sum, eps_max, eps_bar = 0.0 , 0.0, 0.0, 0.0
             
+            # print(Freg.R)
+            # print(Freg.p)
             # Step 1 transverse the source point cloud and find the corresponding points in the target mesh
             for point in source_cloud:
 
-                error,eps, eps_bar = 0.0 , 0.0, 0.0
-                eps_bar_sequence = []
+
                 #  Have to find the closest ahead in the first iteration
                 point = np.reshape(point, (1,3))
-                transformed_point = Freg @ point
-                bnd = 10000.0 if iter ==0 else np.linalg.norm( transformed_point - closest_point)
+                transformed_point = (Freg @ point).reshape(1,3)
+                bnd = 10000.0 if iter == 0 else np.linalg.norm( transformed_point - closest_point)
 
-                closest_point, min_distance = self.correspond_points(point, bnd)
+                closest_point, min_distance = self.correspond_points(transformed_point, bnd, search_method)
                 if min_distance < ita:
                     A.append(point)
                     B.append(closest_point)
             
+
             # Step 2 compute the iterative transformation matrix Freg
             A = np.asarray(A).reshape(-1,3)
             B = np.asarray(B).reshape(-1,3)
             print(A.shape)
-            print(B.shape)
+
             transformation = regist_matched_points(A, B)
             Freg.R = transformation[0:3,0:3]
-            Freg.p = transformation[0:3,3]
+            Freg.p = transformation[0:3,3].reshape(3,1)
+
             for i in range(len(A)):
-                error += np.inner(A[i] - B[i], A[i] - B[i])
-                eps_bar += np.linalg.norm(A[i] - B[i])
-                if np.sqrt(error) > eps:
-                    eps = np.sqrt(error)
-            sigma = np.sqrt(error)/len(A)
+                A_temp = np.reshape(A[i,:], (1,3))
+                B_temp = np.reshape(B[i,:], (1,3))
+                A_transformed = np.reshape(Freg @ A_temp, (1,3))
+                
+                error = np.inner(A_transformed - B_temp, A_transformed - B_temp)
+                error_sum += error
+                eps_bar += np.sqrt(error)[0,0]
+                
+                if np.sqrt(error) > eps_max:
+                    eps_max = (np.sqrt(error))[0,0]
+            sigma = (np.sqrt(error)/len(A))[0,0]
             eps_bar = eps_bar/len(A)
             eps_bar_sequence.append(eps_bar)
 
+            if iter > 1:
+                convergence_flag = True if eps_bar_sequence[-1] / eps_bar_sequence[-2] >= 0.95 else False
+            else:
+                convergence_flag = False
             print("--------------------")
-            print("\nIteration: ", iter, "\nError: ", eps, "\nSigma: ", sigma, "\nEps_bar: ", eps_bar)
+            print("\nIteration: ", iter, "\nMax Error: ", eps_max, "\nSigma: ", sigma, "\nEps_bar: ", eps_bar)
+            print("Convergence Flag: ", convergence_flag)
             
             # Step 3 update threshold
             ita = 3 * eps_bar
             
             # Step 4 check the termination condition
-            if sigma < 0.001 and eps_bar < 0.001:
+
+            if sigma < self.threshold[0] and (eps_bar < self.threshold[1] or eps_max < self.threshold[2] ):
                 print("\nTermination Condition Reached!")
-                print("\nChecking Convergence...\n")
-                if eps_bar_sequence[-1] / eps_bar_sequence[-2] >= 0.95:
+                print("Checking Convergence...")
+                if convergence_flag:
+                    print("Converged!")
                     break
-            else:
-                iter += 1
+            
+            iter += 1
         return Freg
 
 

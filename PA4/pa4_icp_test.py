@@ -12,8 +12,6 @@ import time
 
 import cispa.DataProcess as DP
 from cispa.CarteFrame import CarteFrame
-from cispa.FindClosestPoint2Mesh import FindClosestPoint2Mesh
-from cispa.Octree import Octree
 from cispa.Registration import regist_matched_points
 from cispa.IterClosestPoint import ICP
 
@@ -96,11 +94,11 @@ def main(data_dir, output_dir, name):
     for i in range(Nframes):
         readings_A_body = readings[ i * NS : i * NS + Nmarkers, : ]
         F_A = regist_matched_points(rigidbody_A_body, readings_A_body)
-        F_Ak = CarteFrame(F_A[0:3,0:3], F_A[0:3,3])
+        F_Ak = CarteFrame(F_A[0:3,0:3], F_A[0:3,3].reshape(3,1))
 
         readings_B_body = readings[ i * NS + Nmarkers : i * NS + 2 * Nmarkers, : ]
         F_B = regist_matched_points(rigidbody_B_body, readings_B_body)
-        F_Bk = CarteFrame(F_B[0:3,0:3], F_B[0:3,3])
+        F_Bk = CarteFrame(F_B[0:3,0:3], F_B[0:3,3].reshape(3,1))
 
         # Compute pointer tip w.r.t B body
         F_Bk.inverse()
@@ -114,10 +112,12 @@ def main(data_dir, output_dir, name):
     ############## Perform Iterative Closest Point here ########################
     ############################################################################
     # Initialize the ICP object
-
+    start = time.time()
     ICP_ = ICP(mesh, threshold=[0.01, 0.01, 0.01], max_iter=100)
     F = ICP_.compute_icp_transform(dk)
-    print(F.R)
+    end = time.time()
+    log.info(f"ICP time = \n{end - start} seconds")
+    log.info(f"ICP transformation matrix :\n R = {F.R} \n t = {F.p}")
     # brute_result = []
     # octree_result = []
     # start = time.time()
@@ -144,7 +144,7 @@ def main(data_dir, output_dir, name):
     ############### Visualization for dk and the surface mesh ##################
     ############################################################################
     fig = plt.figure()
-    plt.set_loglevel('info')
+    plt.set_loglevel('warning')
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(dk[:,0],dk[:,1],dk[:,2], c = 'r', marker = 'o')
     ax.scatter(vertex[:,0], vertex[:,1], vertex[:,2], c = 'b', alpha=0.2)
@@ -171,6 +171,11 @@ def main(data_dir, output_dir, name):
 
 if __name__=="__main__":
     main()
+    # a = []
+    # a.append(np.array([[1,2,3]]))
+    # a.append(np.array([[4,5,6]]))
+    # a.append(np.array([[7,8,9]]))
+    # print(a[-1]-a[-2])
     # container = {}
     # container['vertex'] = np.array([[1,2,3],[4,5,6],[7,8,9]])
     # container['face_idx'] = np.array([[1,2,3]])

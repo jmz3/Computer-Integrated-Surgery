@@ -59,11 +59,11 @@ def main(data_dir, output_dir, name):
     face_idx = face_idx # index starts from 0
 
     Closest2Mesh_ = FindClosestPoint2Mesh(vertex, Nface, face_idx) # initialize an object of FindClosestPoint2Mesh
-    point = np.array([-20.0,0.0,5.0]).reshape(3)
+    point = np.array([-6.1315,17.367,12.2955]).reshape(3)
 
     closest_point = Closest2Mesh_.OctreeSolver(point)
     print(closest_point)
-
+    print(np.linalg.norm(closest_point-point))
     fig = plt.figure(figsize=(10,10))
     plt.set_loglevel('warning')
     ax = fig.add_subplot(projection='3d')

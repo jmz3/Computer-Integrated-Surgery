@@ -23,8 +23,7 @@ class CarteFrame(object):
             # if the input is a 3x1 position vector
             if other.shape == (3, 1):
                 p = self.p + self.R @ other
-
-                return p
+                return p.reshape((1,3))
 
             # if the input is a 1x3 vector        
             elif other.shape == (1, 3):
@@ -51,15 +50,16 @@ if __name__ == "__main__":
     R = np.array([[1,0,0],[0,0,1],[0,-1,0]])
     p = np.array([0,0,1])
     F = CarteFrame(R,p)
-    F1 = F@F
-    print(F.R)
-    F.inverse()
-    print(F.R)
-    print(F.p)
-    print(pow(2,3))
+    # F1 = F@F
+    # print(F.R)
+    # F.inverse()
+    # print(F.R)
+    # print(F.p)
+    # print(pow(2,3))
 
-    F.R = np.array([[-1,0,0],[0,0,-1],[0,-1,0]])
-    print(F.R)
+    # F.R = np.array([[-1,0,0],[0,0,-1],[0,-1,0]])
+    # print(F.R)
+
     # poly = np.array([1,2,3,4,5,6])
     # poly.reshape(6,1)
     # T = np.zeros((6,3))
