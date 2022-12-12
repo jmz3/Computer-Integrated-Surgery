@@ -66,6 +66,8 @@ $$
 
    Remember, in the next iteration, using $F_{reg}q_k$ to find the closest points $c_k$; using $q_k$ and $c_k$ to update $F_{reg}$
 
+<div style="page-break-after: always; break-after: page;"></div>
+
 #### 2) Code Implementation
 
 The code is implemented in **"/cispa/IterClosestPoint.py"**. The basic steps are:
@@ -118,26 +120,26 @@ The criterion of termination we adopted is to stop the iteration when $σ_{n}$  
 The overall structure for the ../PROGRAMS folder is described as follows: 
 
 └── **PROGRAMS**
-    ├── **PA3**			  # Test scripts are contained in this directory
+    ├── **PA4**			  # Test scripts are contained in this directory
     │   ├── **Data**	   # This DIR contains all the provided data
     │   ├── **output**	# This DIR contains all the result of our program
-    │   ├── **pa3_main.py**					# This is the main process that output the result 
-    │   ├── **pa3_compute_dk_test.py**	  # compute the tip point 
-    │   ├── **pa3_find_closest_on_triangle.py** 
-    │   ├── **pa3_octree_search_test.py**	# Octree search to find closest point on mesh
-    │   └── **pa3_linear_search_test.py**	 # Linear search to find closest point on mesh
-    └── **cispa** 											# Utility Functions are in this directory
-        ├── **CarteFrame.py**
+    │   ├── **pa4_main.py**	# This DIR contains all the result of our program
+	│   └── **pa4_icp_test.py**	 # Test the ICP Solver
+    └── **cispa** 											# Utility Functions are in this directory        		├── **CarteFrame.py**
         ├── **ComputeExpectValue.py** 
         ├── **CorrectDistortion.py** 	
-        ├── **DataProcess.py** 						# Import and Export Data
+        ├── **DataProcess.py** 						
         ├── **FindBoundingSphere.py**
         ├── **FindClosestPoint2Mesh.py**		# Find the closest point on the mesh to point
-        ├── **FindClosestPoint2Triangle.py**	# Find the closest point on the triangle
+        ├── **FindClosestPoint2Triangle.py**	
         ├── **HomoRepresentation.py**
-        ├── **Octree.py**								# Generate the octree based on given mesh
+        ├── **Octree.py**								
         ├── **PivotCalibration.py**
-        └── **Registration.py**				
+		├── **IterClosestPoint.py** 				# ICP Implementation
+
+​		└── **Registration.py**				
+
+
 
 ## III. Unit Test and Debug
 
@@ -151,284 +153,344 @@ And list all files to check whether you are in the correct directory.
 
 ```bash
 $ ls
-PA3   cispa
+PA4   cispa
 ```
 
 **Dear Graders**, Before starting to run our code, please remember to install **matplotlib** in your virtual environment. 
 
-### 1. Compute dk Unit Test 
+### 1. ICP Unit Test
 
-This script is implement to compute the tip positions w.r.t. B body frame for all LED data frames. In the ../PROGRAMS directory, run test script "/PA3/pa3_compute_dk_test.py". In the terminal, run the following command:
+This script is implemented to run and test the Iterative Closest Point Algorithm. In the ../PROGRAMS directory, run test script "/PA4/pa4_icp_test.py". In the terminal, using the following command to test the ICP with given debug data based on BruteForce Search.
 
 ```bash
-$ python3 /PA3/pa3_compute_dk_test.py
-INFO     dk for PA3-A-Debug data:                                                                 
-                    [[  5.75770718  19.75264402  -3.01776797]           
-                     [ 17.90665894  25.32838102 -18.84286624]
-                     [-39.30008812 -22.32569893 -30.75256506]
-                     [ -9.82756727 -13.44235012  -1.22125489]
-                     [-24.99293076 -28.7577944  -38.54036667]
-                     [-41.37003445 -14.70559823 -29.90157133]
-                     [ 33.83443216  16.2533508    7.01085956]
-                     [ -2.48501569  -7.41132429  29.48201166]
-                     [ 26.65360204  23.29655741 -10.08941296]
-                     [  3.48440717   8.81466607 -14.49922852]
-                     [-22.84699817 -12.85719931 -48.78797397]
-                     [ 23.77236338  -6.19173927  13.76863119]
-                     [ -6.24773552  10.3658506    2.06087393]
-                     [-39.00797053 -17.63316542 -14.57114666]         
-                     [-24.84466034 -11.01359415  -6.08798191]] 
+$ python3 /PA4/pa4_icp_test.py -n PA4-A-Debug
+-----------------------------
+Iteration:  0 
+Max Error:  0.007296588755025472 
+Sigma:  6.418087247959794e-05 
+Eps_bar:  0.0026738785954926376
+Convergence Flag:  False
+Termination Condition Reached!
+Checking Convergence...
+-----------------------------
+Iteration:  1 
+Max Error:  0.007324601783688765 
+Sigma:  5.82115039929643e-05 
+Eps_bar:  0.002302747183746499
+Convergence Flag:  False
+Termination Condition Reached!
+Checking Convergence...
+-----------------------------
+Iteration:  2 
+Max Error:  0.006206855125657278 
+Sigma:  5.374036809133574e-05 
+Eps_bar:  0.0020148950330007493
+Convergence Flag:  False
+Termination Condition Reached!
+Checking Convergence...
+-----------------------------
+Iteration:  3 
+Max Error:  0.004451084757710672 
+Sigma:  5.047461309804469e-05 
+Eps_bar:  0.0018138042593038159
+Convergence Flag:  False
+Termination Condition Reached!
+Checking Convergence...
+-----------------------------
+Iteration:  4 
+Max Error:  0.004312592212429139 
+Sigma:  4.760076615548475e-05 
+Eps_bar:  0.001734653467734899
+Convergence Flag:  True
+Termination Condition Reached!
+Checking Convergence...
+Converged!
+[05:24:39] INFO     ICP time =
+										39.031960010528564 seconds
+           INFO     ICP transformation matrix : 
+           					R =
+           					[[ 1.00000000e+00 -1.10774285e-05  1.77951869e-05]
+                     [ 1.10786612e-05  9.99999998e-01 -6.92754954e-05]
+                     [-1.77944194e-05  6.92756925e-05  9.99999997e-01]]                                                                                                                                                                                   
+                     t =[[-0.00200915] [-0.00194022] [-0.00070645]]                    
 ```
+
+![PA4-1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/PA4-1.png)
 
 Compare the result to given answer, we can see our code is correct.
 
-### 2. Closest Point on Triangle Unit Test
 
-This script is to find closest point for a given point and a given triangle. In the ../PROGRAMS directory, run test script "/PA3/pa3_find_closest_on_triangle.py". In the terminal, run the following command:
 
-```bash
-$ python3 PA3/pa3_find_closest_on_triangle.py
-```
-
-And we use matplotlib to demonstrate our result:
-
-![Figure_1](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_1-8991031.png)
-
-The sphere is a little bit distorted due to the unequal axis range. But as we can see, the result closest point is correct.
-
-### 3. Linear Search Unit Test
-
-This script is used to find closest point on mesh routine that works by linear search through all the triangles. In the ../PROGRAMS directory, run test script "/PA3/pa3_linear_search_test.py". In the terminal, run the following command:
-
-```bash
-$ python3 /PA3/pa3_linear_search_test.py
-```
-
-To demonstrate the result, we plotted the triangle and the point together with the corresponding closest point.
-
-![Figure_2](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_2.png)
-
-### 4. Compute Bounding Sphere Unit Test
-
-This script is designed to check whether the Bounding Sphere for one given triangle is correctly generated. 
-
-```bash
-$ python3 PA3/pa3_single_sphere_test
-[0.5 0.5 0. ]
-0.7071067811865476
-```
-
-Here we use the triangle with three vertices, which are [[0, 0, 0], [1, 0, 0], [0, 1, 0]]. Through simple inspection, we can see that our result is correct.
-
-### 5 Octree Search Unit Test
-
-We generate a octree based on the given triangular mesh. And then we perform octree search. In the ../PROGRAMS directory, run test script "/PA3/pa3_octree_search_test.py". In the terminal, run the following command:
-
-```bash
-$ python3 PA3/pa3_octree_search_test.py
-```
-
-To demonstrate the result, we plotted the triangle and the point together with the corresponding closest point.
-
-![Figure_3](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA3-REPORT.assets/Figure_3.png)
-
-By simple inspection, we can see that our result is correct.
-
-### 6. Discussion for the results of finding point pairs in different cases
+### 2. Discussion for the results for different cases
 
 #### 1) Debug case ####
 
-Table 1 shows us  a quantitative evaluation of various proposed methods to find the
-closest points. For both the Debug and Unknown cases, we compared the running time of the four methods to demonstrate the efficiency improvement.
+In Table 1, compared with the Brute Force Search, the Octree Search has largely reduced running time. Besides the octree generation time consumption, the search process only takes 1/8 of the time for the brute force search. This could be caused by the performance in the implementation of python. During the tree construction process, there would be a series of calling and assignment operations for List type limiting the efficiency of Octree.
 
-In Table 2 , compared with the Brutal Search, the Octree Search has largely reduced running time. Beside the octree generation time comsuption, the search process only takes 10% of time for the brute force search. This could be caused by the performance in the implementation of python. During the process of the tree construction, there would be a series of calling and assignment operations for List type limiting the efficiency of Octree.
-
-**Table 1**: Quantitative evaluation of the proposed methods' accuracy.  All the  methods come to same accuracy. The error has been computed in  <u>L2 Norm</u>
-
-| Case | $d$ error | $c$ error |
-| :--: | :-------: | :-------: |
-|  A   |  0.0053   |  0.0061   |
-|  B   |  0.0054   |  0.0056   |
-|  C   |  0.0061   |  0.0062   |
-|  D   |  0.0087   |  0.0067   |
-|  E   |  0.0081   |  0.0078   |
-|  F   |  0.0082   |  0.0073   |
-
-**Table 2**:  Comparison of various methods in running time for Debug case A-F
+<p align="center"><b>Table 1</b>:  Comparison of various methods in running time for Debug case A-F</p>
 
 |       Method        | Time(s) | | | | | |
 | :-----------------: | --------------- | -------- | -------- | -------- | --------- | -------- |
 |                     | A               | B        | C        | D        | E         | F        |
-| Brutal Force Solver | 8.0982     | 405.4058 | 700.1229 | 745.9486 | 1.4501    | 1.4422   |
-|    Octree Solver    | 0.135787        | 0.162758 | 0.161032 | 0.129104 | 0.1443400 | 0.099773 |
+| Brutal Force Solver | 39.0319 | 720.4946 | 700.1229 | 745.9486 | 419.5355 | 362.8294 |
+|    Octree Solver    | 5.0123   | 79.18321 | 82.04423 | 83.2465 | 47.2459 | 39.3456 |
+
+We notice that E and F data cannot reach the threshold we set for max-error and average error. Therefore, we exit the iteration according to the convergence criterion. A reasonable hypothesis is that there are noises in datasets E and F which cannot be eliminated through the outlier reduction process.
 
 #### 2) Unknown case
 
-For Unknown cases, we save the results in ./output.
+For Unknown cases, we save the results in ./output. In the section, we also give a time comparison, which is shown in Table 2. For all 4 cases,  the Octree-based Search method performs better than the Brute Force Method. 
 
-In the section, we also give time comparison. For the 3 cases,  the Octree based Search
-method performs better than the Bounding Sphere Search method.
-
-**Table 3**:  Comparison of various methods in running time for Debug case G-K
+<p align="center"><b>Table 2</b>:  Comparison of various methods in running time for Debug case G-K</p>
 
 |       Method       | Time(s)  |          |          |          |
 | :----------------: | -------- | -------- | -------- | -------- |
 |                    | G        | H        | J        | K        |
-| Brute Force Solver | 682.0382 | 847.2487 | 1.4563   | 1.4601   |
-|   Octree Solver    | 0.145598 | 0.139905 | 0.125763 | 0.173482 |
+| Brute Force Solver | 682.0382 | 847.2487 | 410.4638 | 249.9082 |
+|   Octree Solver    | 72.3959  | 89.0580  | 33.7900  | 29.0014  |
+
+Similarly, We notice that J and K data cannot reach the threshold we set for max-error and average error. We presume it has the same reason as Debug datasets E and F.
 
 ## IV. Result and Discussions
 
-### 1. Discussion
+### 1. Evaluation Metrics
 
-#### 1.1 Evaluation Metrics
+The evaluation methods are introduced in Eq 2-5. Besides, we consider the convergence condition to be another termination condition. That is because there exist some cases that the source data is "polluted" by noises so that max_error cannot reach to termination threshold even if the conditions have already converged.
 
-The implementation of the ICP algorithm underlines the performance of both the accuracy and speed, which are respectively measured with Euclidean distance with ground-truth coordinates and the running time.
+### 2. ICP Result for Debug Dataset
 
-#### 1.2 Unit test for robust pose estimation
+In this section, we first give a quantitative evaluation of the implemented ICP algorithm on various cases shown in Table 1. In addition, for both the Debug and Unknown cases, we compared the running time of the three made searching methods, which are Brute-Force Search, and Octree Search, to demonstrate the efficiency improvement.
 
-We wrote a test program, *unit_test.py*, for the most important subroutine *RobustPoseEstimation*(), which is used to filter out outliers (incorrect matching).
-We artificially corrupt the given ‘clean’ surface points to simulate the noises in real applications. Specifically, we set noisy ratio as the ratio of correct points and noisy points which are corrupted by randomly shifting from the original coordinates. Based on these simulated datasets, we can investigate the effectiveness of the robust pose estimation module in alleviating the negative effects brought by mismatching.
-With various noisy ratios, we compared the performance between algorithms with and without using robust pose estimation in terms of the average error with ground-truth. As shown in Fig. 1, the robust estimation demonstrates a strong capability of improving the robustness under various noises ratios.
-Furthermore, we also adopted the robust pose estimation to facilitate the registration of the given Debug datasets. However, only Case E exhibits a reduction in error from 0.04 to 0.02 with robust pose estimation. Considering the discrepancy between the given output file and the answer file, we conjecture there could be some outliers leading to incorrect matches in this dataset.
+To demonstrate our result, we use L2-Norm to compare the given output and ours, the comparison is shown in Table 3
 
-#### 1.3 Result of ICP
+<p align="center"><b>TABLE 3 </b>L2-Norm for our result and given output</p>
 
-In this section, we first give a quantitative evaluation of the implemented ICP algorithm on various cases shown in Table 1. In addition, for both the Debug and Unknown cases, we compared the running time of the three made searching methods, which are Brute-Force Search, Simple Bounding Sphere Search, and Octree Search, to demonstrate the efficiency improvement.
-
-#### 1 A-Debug case
-
-<h6 align="center">TABLE 3 PA3-A-Debug-own-output</h6>
-
-| OUR RESULTS  | GIVEN RESULTS                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| (17.90666   25.32838  -18.84287   17.90731   25.32410  -18.84304    0.00434)| (17.91    25.32   -18.84        17.91    25.32   -18.84     0.000)|
-|( -39.30009  -22.32570  -30.75257  -39.30331  -22.32773  -30.75337    0.00389)| (-39.30   -22.33   -30.75       -39.30   -22.33   -30.75     0.000)|
-|(-9.82757  -13.44235   -1.22125   -9.82755  -13.44231   -1.22128    0.00005) | (-9.83   -13.44    -1.22        -9.83   -13.44    -1.22     0.000) |
-
-### 2.B-Debug
-
-The result is compared  with the "PA3-B-Debug-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 2 PA3-B-Debug-own-output</h6>
-
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | (1.15508   11.01661   -8.29899    1.18421   10.94645   -8.26507    0.08320)<br/>(-31.61757   -5.26328  -12.85190  -32.46366   -3.96838   -9.86385    3.36468)<br/>(-24.43960   -0.75184  -14.42152  -25.33479    0.98430  -12.44331    2.78008)<br/> | (1.15    11.01    -8.30         1.18    10.95    -8.27     0.082)<br/>  (-31.62    -5.26   -12.85       -32.46    -3.97    -9.86     3.366)<br/>  (-24.44    -0.76   -14.42       -25.34     0.98   -12.44     2.784)<br/> |
-
-### 3.C-Debug
-
-The result is compared  with the "PA3-C-Debug-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 3 PA3-C-Debug-own-output</h6>
-
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | (27.51716   -8.17727    6.19635   27.51501   -8.14967    6.18664    0.02933)<br/>(-8.77465    6.25957   46.45507   -6.95442    6.25081   46.40286    1.82100)<br/>(27.63058  -11.79476  -12.06240   27.82258  -12.01527  -11.99464    0.30014)<br/> | (27.52    -8.18     6.20        27.51    -8.15     6.19     0.030)<br/>   (-8.78     6.25    46.45        -6.95     6.25    46.40     1.823)<br/>   (27.63   -11.80   -12.06        27.82   -12.02   -12.00     0.298)<br/> |
-
-### 4.D-Debug
-
-The result is compared  with the "PA3-D-Debug-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 4 PA3-D-Debug-own-output</h6>
-
-| OUR RESULTS                                                  | GIVEN RESULTS                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| (15.42274   19.93007   35.51362   15.44614   21.76373   36.08316    1.92021)<br/>   (-5.15204  -18.60613   -8.49794   -5.19629  -18.17795   -8.68783    0.47048)<br/>    (3.33449   22.29966   27.79139    3.45898   23.17946   27.91469    0.89708)<br/> | ( 15.42    19.93    35.51        15.45    21.76    36.08     1.922) <br/>  (-5.15   -18.60    -8.50        -5.19   -18.18    -8.69     0.470)<br/>    (3.34    22.29    27.79         3.46    23.18    27.92     0.902)<br/> |
-
-### 5.E-Debug
-
-The result is compared  with the "PA3-E-Debug-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 5 PA3-E-Debug-own-output</h6>
-
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | ( -2.28196   -5.06556  -27.61830   -0.78391   -4.32855  -28.66912    1.97271) <br/> (-41.51150  -13.61948  -42.49447  -38.68369  -13.27770  -40.83609    3.29599) <br/>  (30.09727   15.19825   -6.44416   33.02990   17.64569   -6.29841    3.82251)<br/> | (-2.28    -5.07   -27.62        -0.78    -4.34   -28.67     1.976)<br/>  (-41.51   -13.61   -42.49       -38.68   -13.28   -40.84     3.296)<br/>   (30.09    15.21    -6.45        33.02    17.65    -6.30     3.816)<br/> |
-
-### 6.F-Debug
-
-The result is compared  with the "PA3-F-Debug-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 6 PA3-F-Debug-own-output</h6>
-
-|      | OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-|      | ( -9.27443  -29.37243  -38.63571  -10.81595  -27.29781  -37.41410    2.85878)<br/> (-38.37045    0.91475  -25.07241  -39.95337    1.99688  -25.06008    1.91750)<br/>(-5.78249  -29.91310  -19.62803   -7.35776  -27.20945  -20.30206    3.20085)<br/> | (-9.27   -29.37   -38.63       -10.81   -27.29   -37.41     2.856)<br/>  (-38.36     0.91   -25.07       -39.95     2.00   -25.06     1.924)<br/>   (-5.79   -29.91   -19.63        -7.36   -27.21   -20.30     3.195)<br/> |
-
-### 7.G-Debug
-
-The result is compared  with the "PA3-G-Unknown-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 7 PA3-G-Unknown-own-output.txt</h6>
-
-|      | OUR RESULTS                                                  |
-| ---- | ------------------------------------------------------------ |
-|      | (-13.66093   12.38037   30.02801  -13.96138   11.96082   30.24026    0.55799)<br/>   (16.00902   24.41337    8.53591   16.55037   26.03651    9.01081    1.77572)<br/>    (9.75001   15.57415  -10.16029    9.92203   15.53096   -9.94482    0.27908)<br/> |
-
-### 8.H-Debug
-
-The result is compared  with the "PA3-H-Unknown-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 8 PA3-H-Unknown-own-output.txt</h6>
-
-|      | OUR RESULTS                                                  |
-| ---- | ------------------------------------------------------------ |
-|      | ( 2.51675  -13.64304    8.64420    2.83203  -11.96537    8.47300    1.71560)<br/>   (-4.31288  -12.33908  -37.45976   -2.14691  -12.27012  -38.16811    2.27991)<br/>  (-35.97575   -7.62909  -42.13914  -36.66262   -7.35385  -42.91870    1.07483)<br/> |
-
-### 9.J-Debug
-
-The result is compared  with the "PA3-J-Unknown-own-output.txt" and shown in the table below.
-
-<h6 align="center">TABLE 9 PA3-J-Unknown-own-output.txt</h6>
-
-|      | OUR RESULTS                                                  |
-| ---- | ------------------------------------------------------------ |
-|      | (21.48054   -0.92945   49.72730   20.59832   -0.49203   49.58690    0.99467)<br/>   (25.36021    6.03934   25.74393   27.53223    5.82745   26.43426    2.28892)<br/>    (8.03087   10.08615  -11.70728    7.97719   10.55353  -11.99916    0.55365)<br/> |
-
-#### 10.1 Debug case
-
-According to Table 1, the error less than 0.01 means that the predicted number is exactly the same as the given reference ground-truth, which verifies the correctness of our implemented module in finding the best rigid body transformation from point cloud to surface model by utilizing ICP algorithm. For cases D, E, and F, the errors are more than 0.01 regardless of whether implementing robust pose estimation.
-
-<h6 align="center">TABLE 1 Quantitative evaluation of the implemented methods’ accuracy. Due to the same closest point on mesh w.r.t. point, all the four methods achieve the same accuracy. The error is computed in terms of L2 Norm</h6>
+| Dataset | $s_k$ error | $c_k$ error |
+| :-----: | :---------: | :---------: |
+|    A    |   0.0072    |   0.0065    |
+|    B    |   0.0088    |   0.0079    |
+|    C    |   0.0091    |   0.0080    |
+|    D    |   0.0112    |   0.0099    |
+|    E    |   0.0298    |   0.0231    |
+|    F    |   0.0303    |   0.0317    |
 
 
-| DataSet | $c^{expected}$ error | pivot error | nav error |
-| :-----: | :------------------: | :---------: | :-------: |
-| debug-a |        0.0048        |   0.0037    |  0.0052   |
-| debug-b |        0.8524        |   0.1824    |  0.0249   |
-| debug-c |        0.8349        |   0.4538    |  1.2514   |
-| debug-d |        0.0190        |   0.0068    |  0.0058   |
-| debug-e |        3.5046        |   1.6100    |  3.1573   |
-| debug-f |        2.8998        |   1.5632    |  2.9556   |
 
-We guess that this phenomenon is because the current robust pose estimation method is not effective enough to filter out the outliers in the dataset. Another explanation may be that the ICP algorithm suffers from local optimal solution. Its performance critically relies on the quality of initialization, and only local optimality is guaranteed.
+#### 2.1. A-Debug case
 
-<h6 align="center">TABLE 2 Comparison of various methods in terms of running time for Debug case A-F.</h6>
+The result is compared with the "PA4-A-Debug-own-output.txt" and a segment of the result is shown in the table below.
 
-| OUR RESULTS                                                  | GIVEN RESULTS                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| (17.90666   25.32838  -18.84287   17.90731   25.32410  -18.84304    0.00434) | (17.91    25.32   -18.84        17.91    25.32   -18.84     0.000) |
-| ( -39.30009  -22.32570  -30.75257  -39.30331  -22.32773  -30.75337    0.00389) | (-39.30   -22.33   -30.75       -39.30   -22.33   -30.75     0.000) |
-| (-9.82757  -13.44235   -1.22125   -9.82755  -13.44231   -1.22128    0.00005) | (-9.83   -13.44    -1.22        -9.83   -13.44    -1.22     0.000) |
+<p align="center"><b>TABLE 4 </b>PA3-A-Debug-own-output</p>
 
-As shown in Table 2, ’Octree’ denoting the Octree Search demonstrates the highest speed in implementing ICP in every case. Compared to naive Brutal Search, all the two smarter methods significantly improved the computation efficiency, especially Octree Search. Table 2 demonstrates that the clever search algorithm saves much time.
+**Our Results**
 
-#### 10.2 Unknown case
+| $d_k.x$  | $d_k.y$  |  $d_k.z$  | $c_k.x$  | $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :------: | :------: | :-------: | :------: | :------: | :-------: | :----------------------------------: |
+| -4.76523 | 20.38775 | 13.36044  | -4.76683 | 20.38423 | 13.36185  |               0.00411                |
+| -6.13158 | 17.36735 | 12.29557  | -6.13419 | 17.36472 | 12.29568  |               0.00370                |
+| -0.25092 | 4.91662  | -21.87844 | -0.2546  | 4.91456  | -21.87736 |               0.00443                |
 
-For Unknown cases, we save the results in ./OUTPUT. As shown in Table 3, we simply give the
-time comparison in this section. For these three cases, the Octree based Search method significantly outperforms the Bounding Sphere Search method. Both of these two clever algorithms are much faster than Brute-Force Search method.
+**Given Results**
 
-|       Method       | Time(s)  |          |          |          |
-| :----------------: | -------- | -------- | -------- | -------- |
-|                    | G        | H        | I        | J        |
-| Brute Force Solver | 1.4533   | 1.4526   | 1.4563   | 1.4601   |
-|   Octree Solver    | 0.145598 | 0.139905 | 0.125763 | 0.173482 |
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  -4.77  |  20.38  |  13.36  |  -4.77  |  20.38  |  13.36  |                 0.00                 |
+|  -6.13  |  17.36  |  12.30  |  -6.13  |  17.36  |  12.30  |                 0.00                 |
+|  -0.25  |  4.91   | -21.88  |  -0.25  |  4.91   | -21.88  |                 0.00                 |
+
+![PA4-3](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/PA4-3.png)
+
+#### 2.2. B-Debug
+
+The result is compared with the "PA4-B-Debug-own-output.txt" and a segment of the result is shown in the table below.
+
+<p align="center"><b>TABLE 5 </b>PA4-B-Debug-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+|  6.67632  | -4.78724  | 63.41865  |  6.68189  | -4.80027  | 63.41594  |               0.00050                |
+| -37.19274 | -17.17340 | -41.06712 | -37.19187 | -17.17339 | -41.06642 |               0.00121                |
+| 28.11550  | 19.27105  | 12.82410  | 28.11558  | 19.27111  | 12.82416  |               0.00012                |
+
+**Given Results**
+
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  6.68   |  -4.80  |  63.42  |  6.68   |  -4.80  |  63.42  |                 0.00                 |
+| -37.20  | -17.16  | -41.07  | -37.20  | -17.16  | -41.07  |                 0.00                 |
+|  28.12  |  19.26  |  12.82  |  28.12  |  19.26  |  12.82  |                 0.00                 |
+
+![PA4-2](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/PA4-2.png)
+
+#### 2.3. C-Debug
+
+The result is compared with the "PA4-C-Debug-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 6 </b>PA4-C-Debug-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+|  3.14217  | -7.01464  | 52.60118  |  3.14176  | -7.01778  | 52.60090  |               0.00318                |
+| 30.04987  | 12.93950  | 16.46012  | 30.04923  | 12.93932  | 16.45975  |               0.00076                |
+| -33.86310 | -23.65617 | -13.48330 | -33.86272 | -23.65572 | -13.48364 |               0.00068                |
+
+**Given Results**
+
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  3.15   |  -7.02  |  52.60  |  3.15   |  -7.02  |  52.60  |                 0.00                 |
+|  30.05  |  12.94  |  16.46  |  30.05  |  12.94  |  16.46  |                 0.00                 |
+| -33.86  | -23.66  | -13.48  | -33.86  | -23.66  | -13.48  |                 0.00                 |
+
+![PA4-4](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/PA4-4.png)
+
+#### 2.4. D-Debug
+
+The result is compared with the "PA4-D-Debug-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 7 </b>PA4-D-Debug-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+|  4.64148  | 10.64674  | -11.33561 |  4.64150  | 10.64569  | -11.33496 |               0.00123                |
+| -33.66358 | -26.57982 | -17.16295 | -33.66550 | -26.57981 | -17.16183 |               0.00303                |
+|  3.95660  | 19.38075  |  0.62465  |  3.95714  | 19.38058  |  0.62492  |               0.00063                |
+
+**Given Results**
+
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  4.64   |  10.64  | -11.34  |  4.64   |  10.64  | -11.34  |                 0.00                 |
+| -33.65  | -26.59  | -17.16  | -33.65  | -26.59  | -17.16  |                 0.00                 |
+|  3.95   |  19.38  |  0.62   |  3.95   |  19.38  |  0.62   |                 0.00                 |
+
+![PA4-5](/Users/jeremy/Library/CloudStorage/OneDrive-Personal/601.655CIS1/Homework/ProgramAssignment/REPORT/PA4-REPORT.assets/PA4-5.png)
+
+#### 2.5. E-Debug
+
+The result is compared with the "PA4-E-Debug-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 8 </b>PA4-E-Debug-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  | $d_k.y$  |  $d_k.z$  |  $c_k.x$  | $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :------: | :-------: | :-------: | :------: | :-------: | :----------------------------------: |
+| -1.52454  | 23.96212 | 21.64005  | -1.51920  | 24.11006 | 21.63451  |               0.14814                |
+| -16.94467 | 6.20677  | -13.18442 | -16.93070 | 6.16768  | -13.22228 |               0.05618                |
+|  6.56171  | 16.61250 | -5.98440  |  6.53039  | 16.63523 | -6.00568  |               0.04388                |
+
+**Given Results**
+
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  -1.55  |  23.95  |  21.67  |  -1.54  |  24.11  |  21.67  |                0.158                 |
+| -16.94  |  6.21   | -13.17  | -16.92  |  6.16   | -13.21  |                0.064                 |
+|  6.56   |  16.61  |  -5.95  |  6.52   |  16.65  |  -5.98  |                0.060                 |
+
+
+
+#### 2.6. F-Debug
+
+The result is compared with the "PA4-F-Debug-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 9 </b>PA4-F-Debug-own-output</p>
+
+**Our Results**
+
+| $d_k.x$  | $d_k.y$ |  $d_k.z$  | $c_k.x$  | $c_k.y$ | $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :------: | :-----: | :-------: | :------: | :-----: | :------: | :----------------------------------: |
+| -3.41479 | 4.72143 | -23.91917 | -3.42619 | 4.70791 | -23.9109 |               0.01952                |
+| -16.3325 | 10.6650 | -34.0154  | -16.3425 | 10.6370 | -34.0076 |               0.03068                |
+| 5.53749  | 20.4962 | 43.43669  | 5.54148  | 20.4639 | 43.43246 |               0.02747                |
+
+**Given Results**
+
+| $d_k.x$ | $d_k.y$ | $d_k.z$ | $c_k.x$ | $c_k.y$ | $c_k.z$ | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :----------------------------------: |
+|  -3.42  |  4.75   | -23.90  |  -3.43  |  4.73   | -23.89  |                0.028                 |
+| -16.34  |  10.67  | -34.00  | -16.35  |  10.65  | -33.99  |                0.029                 |
+|  5.50   |  20.48  |  43.47  |  5.50   |  20.46  |  43.47  |                0.022                 |
+
+By inspection, our hypothesis about datasets E and F are noisier has been validated.
+
+
+
+### 3. ICP Result for Unknown Data
+
+#### 3.1 G-Unknown
+
+The result is compared with the "PA4-G-Unknown-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 10 </b>PA4-G-Unknown-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+| -31.39652 |  2.95585  | -13.76602 | -31.39741 |  2.95613  | -13.76382 |               0.00239                |
+| -41.15667 | -3.37876  | -17.37140 | -41.15464 | -3.37961  | -17.37294 |               0.00269                |
+| -8.87246  | -20.46155 | -43.13026 | -8.87106  | -20.46289 | -43.14208 |               0.00265                |
+
+
+
+#### 3.2 H-Unknown
+
+The result is compared with the "PA4-H-Unknown-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 11 </b>PA4-H-Unknown-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+| -43.06506 | -6.11796  | -30.09367 | -43.06355 | -6.11797  | -30.09320 |               0.00158                |
+|  5.44425  | 23.97245  | 20.27309  |  5.44446  | 23.97840  | 20.27387  |               0.00590                |
+| -37.60270 | -14.73096 | -11.31146 | -37.60239 | -14.73089 | -11.31167 |               0.00038                |
+
+
+
+#### 3.3 J-Unknown
+
+The result is compared with the "PA4-J-Unknown-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 12 </b>PA4-J-Unknown-own-output</p>
+
+**Our Results**
+
+| $d_k.x$  | $d_k.y$  | $d_k.z$  | $c_k.x$ | $c_k.y$  | $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :------: | :------: | :------: | :-----: | :------: | :------: | :----------------------------------: |
+| 3.09453  | 23.84074 | 11.16172 | 3.14715 | 23.76177 | 11.18160 |               0.09695                |
+| 8.93881  | 20.81370 | 52.50778 | 8.87499 | 20.99284 | 52.53015 |               0.19758                |
+| -1.34118 | -11.0236 | 11.4822  | -1.3285 | -10.9256 | 11.47266 |               0.09924                |
+
+
+
+#### 3.4 K-Unknown
+
+The result is compared with the "PA4-K-Unknown-own-output.txt" and shown in the table below.
+
+<p align="center"><b>TABLE 13 </b>PA4-K-Unknown-own-output</p>
+
+**Our Results**
+
+|  $d_k.x$  |  $d_k.y$  |  $d_k.z$  |  $c_k.x$  |  $c_k.y$  |  $c_k.z$  | $ \lVert \vec d_k - \vec c_k \rVert$ |
+| :-------: | :-------: | :-------: | :-------: | :-------: | :-------: | :----------------------------------: |
+| -43.06506 | -6.11796  | -30.09367 | -43.06355 | -6.11797  | -30.09320 |               0.00158                |
+|  5.44425  | 23.97245  | 20.27309  |  5.44446  | 23.97840  | 20.27387  |               0.00590                |
+| -37.60270 | -14.73096 | -11.31146 | -37.60239 | -14.73089 | -11.31167 |               0.00038                |
+
+
 
 ## Contributions
 
-Jiaming Zhang developed Octree Based ICP algorithm; Chongjun Yang developed other
-search methods based ICP algorithm of this PA. Both team member complete a part of this report.
+Jiaming Zhang completed the coding part and Section 1.1, Section 2, Section 3, and Section 4 of the report. Chongjun Yang did the rest part of this report.
 
 
 
@@ -440,7 +502,6 @@ search methods based ICP algorithm of this PA. Both team member complete a part 
 
 [3] Jiaming Zhang, Chongjun Yang. PA3-REPORT
 
-[4] J. Yang, H. Li, and Y. Jia, “Go-icp: Solving 3d registration efficiently and globally optimally,” in
-2013 IEEE International Conference on Computer Vision, 2013, pp. 1457–1464
+[4] https://kartiksonu.github.io/project/icp/slides.pdf
 
 [5] https://en.wikipedia.org/wiki/Octree

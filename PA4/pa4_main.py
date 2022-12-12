@@ -106,74 +106,35 @@ def main(data_dir, output_dir, name, solver):
     d_tip = np.concatenate(d_tip, axis = 1).T
     dk = d_tip
 
-
     ############################################################################
     ############## Perform Iterative Closest Point here ########################
     ############################################################################
     # Initialize the ICP object
     ICP_ = ICP(mesh, threshold=[0.01, 0.01, 0.01], max_iter=100)
-    start = time.time()
-    F,ck = ICP_.compute_icp_transform(dk, search_method="BruteForce")
-    end = time.time()
-    BruteForce_time = end - start
-
-    start = time.time()
-    F,ck = ICP_.compute_icp_transform(dk, search_method="Octree")
-    end = time.time()
-    Octree_time = end - start
-    log.info(f"ICP time using BruteForce= \n{BruteForce_time} seconds")
-    log.info(f"ICP time using Octree= \n{Octree_time} seconds")
+    F,ck = ICP_.compute_icp_transform(dk, search_method=solver)
     log.info(f"ICP transformation matrix :\n R = {F.R} \n t = {F.p}")
 
-
     ############################################################################
-    ############### Visualization for dk and the surface mesh ##################
+    ########################## Output the result ###############################
     ############################################################################
-    fig = plt.figure()
-    plt.set_loglevel('warning')
-    ax = fig.add_subplot(121, projection='3d')
-    ax.scatter(dk[:,0],dk[:,1],dk[:,2], c = 'r', marker = 'x')
-    ax.scatter(vertex[:,0], vertex[:,1], vertex[:,2], c = 'b', alpha=0.2, marker='.')
-    ax.set_title("dk and the surface mesh")
-    sk = np.zeros_like(dk)
-    for i in range(Nframes):
-        temp = np.reshape(dk[i,:],(3,1))
-        sk[i,:] = np.reshape(F @ temp, (3,)) 
+    # Compute sk
+    sk = []
+    for point in dk:
+        point = np.reshape(point, (1,3))
+        sk.append(F @ point)
     
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2.scatter(sk[:,0],sk[:,1],sk[:,2], c = 'r', marker = 'x')
-    ax2.scatter(vertex[:,0], vertex[:,1], vertex[:,2], c = 'b', alpha=0.2, marker='.')
-    ax2.set_title("Freg*dk and the surface mesh")
-    plt.show()
-    # log.info(f"dk for {name} data: {d_tip}")
+    sk = np.asarray(sk).reshape(-1,3)
 
+    diff = np.zeros(Nframes)
+    for i in range(Nframes):
+        diff[i] = np.linalg.norm(sk[i,:] - ck[i,:])
+    
+    diff = np.reshape(diff,(-1,1))
+    Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
+    OutputData = np.hstack([sk,ck])
+    OutputData = np.hstack((OutputData, diff))
+
+    DP.save_txt_data(output_path, Title, OutputData)
 
 if __name__=="__main__":
     main()
-    # a = []
-    # a.append(np.array([[1,2,3]]))
-    # a.append(np.array([[4,5,6]]))
-    # a.append(np.array([[7,8,9]]))
-    # print(a[-1]-a[-2])
-    # container = {}
-    # container['vertex'] = np.array([[1,2,3],[4,5,6],[7,8,9]])
-    # container['face_idx'] = np.array([[1,2,3]])
-    # print(container)
-
-    # a = np.array([[[1,2,3]],[[4,5,6]],[[7,8,9]]])
-    # print(a.shape)
-    # A = []
-    # for i in a:
-    #     A.append(i)
-    
-    # print(A)
-    # Ap = np.asarray(A).reshape((3,3))
-    # print(Ap.shape)
-    # a = 1
-    # b = 2
-    # c = a <= b
-    # print(c)
-    # a = np.array([[1,2,3],[4,5,6],[7,8,9]])
-    # for i in a:
-    #     print(i)
-    

@@ -71,9 +71,10 @@ class ICP(object):
         """
         Freg = CarteFrame() # Initial transformation as identity matrix
         Ftemp = CarteFrame() # Temporary transformation as identity matrix
-        ita = 100.0 # Initial threshold for distance
+        eta = 100.0 # Initial threshold for distance
         iter = 0
         eps_bar_sequence = []
+        convergence_flag_container = []
 
         while (iter<self.max_iter):
             temp_cloud = []
@@ -93,7 +94,7 @@ class ICP(object):
                 bnd = 10000.0 if iter == 0 else np.linalg.norm( transformed_point - closest_point)
 
                 closest_point, min_distance = self.correspond_points(transformed_point, bnd, search_method)
-                if min_distance < ita:
+                if min_distance < eta:
                     A.append(point)
                     B.append(closest_point)
             
@@ -126,15 +127,15 @@ class ICP(object):
                 convergence_flag = True if eps_bar_sequence[-1] / eps_bar_sequence[-2] >= 0.95 else False
             else:
                 convergence_flag = False
-            print("--------------------")
-            print("\nIteration: ", iter, "\nMax Error: ", eps_max, "\nSigma: ", sigma, "\nEps_bar: ", eps_bar)
+            convergence_flag_container.append(convergence_flag)
+            print("-----------------------------")
+            print("Iteration: ", iter, "\nMax Error: ", eps_max, "\nSigma: ", sigma, "\nEps_bar: ", eps_bar)
             print("Convergence Flag: ", convergence_flag)
             
             # Step 3 update threshold
-            ita = 3 * eps_bar
+            eta = 3 * eps_bar
             
             # Step 4 check the termination condition
-
             if sigma < self.threshold[0] and (eps_bar < self.threshold[1] or eps_max < self.threshold[2] ):
                 print("\nTermination Condition Reached!")
                 print("Checking Convergence...")
@@ -142,8 +143,25 @@ class ICP(object):
                     print("Converged!")
                     break
             
+            elif iter > 2 \
+                and convergence_flag_container[-1] \
+                and convergence_flag_container[-2] \
+                and convergence_flag_container[-3]:
+                print("It converges but the termination condition is not reached!")
+                break
+            
             iter += 1
-        return Freg
+        
+        ck = []
+        for point in source_cloud:
+            point = np.reshape(point, (1,3))
+            transformed_point = (Freg @ point).reshape(1,3)
+
+            closest_point, min_distance = self.correspond_points(transformed_point, 10000.0, "Octree")
+            ck.append(closest_point)
+
+        ck = np.asarray(ck).reshape(-1,3)
+        return Freg, ck
 
 
 if __name__=="__main__":
