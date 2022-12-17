@@ -5,6 +5,28 @@ def load_txt_data(file_name):
     data_info = np.loadtxt(file_name,max_rows=1,dtype=str,delimiter=',')
     return data,data_info
 
+def load_txt_modes(file_name):
+    mode_type = []
+    mode_data = []
+    mode_data_temp = []
+    with open(file_name) as f:
+        for line in f:
+            if line.startswith('Problem'):
+                header = line.split()
+            elif line.startswith('Mode'):
+                mode_type.append(line)
+            else:
+                mode_data_temp.append(line.removesuffix('\n'))
+    mode_info = [header[1].split('='),header[2].split('=')]
+
+    for line in mode_data_temp:
+        line = line.split(',')
+        mode_data.append(line)
+    mode_data = np.array(mode_data).astype(np.float)
+    return mode_data, mode_info, mode_type           
+
+    # return data,data_info
+
 def load_txt_data_with_space(file_name):
     data = np.loadtxt(file_name,skiprows=1,dtype=str)
     data = data.astype(np.float)
