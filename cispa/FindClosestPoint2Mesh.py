@@ -130,6 +130,8 @@ class FindClosestPoint2Mesh:
             # print(sphere.center)
             # print(sphere.radius)
             # print(vertex)
+            # for S in SphereList:
+            #     print(S.triangle_idx)
         return SphereList
 
     def OctreeGenerator(self):
@@ -164,7 +166,10 @@ class FindClosestPoint2Mesh:
         container = {}
         container['bound'] = 1e3
         self.octree.FindClosestPoint(a, container)
-        return self.octree.update_container['closest_point'], self.octree.update_container['bound']
+        print(self.octree.update_container['sphere_idx'])
+        return self.octree.update_container['closest_point'],\
+               self.octree.update_container['bound'],\
+               self.octree.update_container['sphere_idx']
         
         
         

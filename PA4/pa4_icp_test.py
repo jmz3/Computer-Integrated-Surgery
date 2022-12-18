@@ -113,12 +113,12 @@ def main(data_dir, output_dir, name, solver):
     # Initialize the ICP object
     ICP_ = ICP(mesh, threshold=[0.01, 0.01, 0.01], max_iter=100)
     start = time.time()
-    F,ck = ICP_.compute_icp_transform(dk, search_method="BruteForce")
+    F,ck, idx = ICP_.compute_icp_transform(dk, search_method="BruteForce")
     end = time.time()
     BruteForce_time = end - start
 
     start = time.time()
-    F,ck = ICP_.compute_icp_transform(dk, search_method="Octree")
+    F,ck, idx = ICP_.compute_icp_transform(dk, search_method="Octree")
     end = time.time()
     Octree_time = end - start
     log.info(f"ICP time using BruteForce= \n{BruteForce_time} seconds")

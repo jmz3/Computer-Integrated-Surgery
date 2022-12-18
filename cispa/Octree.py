@@ -205,6 +205,7 @@ class Octree:
         dist = np.linalg.norm(closest_point - point)
         if dist < update_container['bound']:
             update_container['bound'] = dist
+            update_container['sphere_idx'] = S.triangle_idx
             update_container['closest_point'] = closest_point
 
 if __name__=="__main__":

@@ -107,18 +107,14 @@ def main(data_dir, output_dir, name, solver):
 
     mode_data, mode_info,mode_type = DP.load_txt_modes(mode_path)
     Nvertex, Nmodes  = int(mode_info[0][1]), int(mode_info[1][1])
-    lam = np.array([0.0,  0.0,   77.4007,  -25.3402,  -83.8381,  -74.6654])
-
+    mode=[]
     for i in range(Nmodes+1):
-        q = mode_data[Nvertex * i : Nvertex*(i+1)]
-        if i == 0:
-            vertex = q
-        else:
-            vertex = vertex + lam[i-1] * q
+        mode.append(mode_data[Nvertex * i : Nvertex*(i+1)])
 
-    print(vertex.shape)
-    mesh['vertex'] = vertex
-    print(origin_vertex-vertex)
+    # print(vertex.shape)
+    # mesh['vertex'] = vertex
+    # print(np.mean(np.abs(origin_vertex-vertex)))
+    # print(origin_vertex-vertex)
     ############################################################################
     ############## Perform Iterative Closest Point here ########################
     ############################################################################
@@ -131,25 +127,25 @@ def main(data_dir, output_dir, name, solver):
     ########################## Output the result ###############################
     ############################################################################
     # Compute sk
-    sk = []
-    for point in dk:
-        point = np.reshape(point, (1,3))
-        sk.append(F @ point)
+    # sk = []
+    # for point in dk:
+    #     point = np.reshape(point, (1,3))
+    #     sk.append(F @ point)
     
-    sk = np.asarray(sk).reshape(-1,3)
+    # sk = np.asarray(sk).reshape(-1,3)
 
-    diff = np.zeros(Nframes)
-    for i in range(Nframes):
-        diff[i] = np.linalg.norm(sk[i,:] - ck[i,:])
-        # diff[i] = np.linalg.norm(origin_vertex[i,:] - vertex[i,:])
+    # diff = np.zeros(Nframes)
+    # for i in range(Nframes):
+    #     diff[i] = np.linalg.norm(sk[i,:] - ck[i,:])
+    #     # diff[i] = np.linalg.norm(origin_vertex[i,:] - vertex[i,:])
 
     
-    diff = np.reshape(diff,(-1,1))
-    Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
-    OutputData = np.hstack([sk,ck])
-    OutputData = np.hstack((OutputData, diff))
+    # diff = np.reshape(diff,(-1,1))
+    # Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
+    # OutputData = np.hstack([sk,ck])
+    # OutputData = np.hstack((OutputData, diff))
 
-    DP.save_txt_data(output_path, Title, OutputData)
+    # DP.save_txt_data(output_path, Title, OutputData)
 
     
     

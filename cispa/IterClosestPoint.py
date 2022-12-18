@@ -93,7 +93,7 @@ class ICP(object):
                 transformed_point = (Freg @ point).reshape(1,3)
                 bnd = 10000.0 if iter == 0 else np.linalg.norm( transformed_point - closest_point)
 
-                closest_point, min_distance = self.correspond_points(transformed_point, bnd, search_method)
+                closest_point, min_distance,idx = self.correspond_points(transformed_point, bnd, search_method)
                 if min_distance < eta:
                     A.append(point)
                     B.append(closest_point)
@@ -153,12 +153,14 @@ class ICP(object):
             iter += 1
         
         ck = []
+        triangle_idx = []
         for point in source_cloud:
             point = np.reshape(point, (1,3))
             transformed_point = (Freg @ point).reshape(1,3)
 
-            closest_point, min_distance = self.correspond_points(transformed_point, 10000.0, "Octree")
+            closest_point, min_distance, idx = self.correspond_points(transformed_point, 10000.0, "Octree")
             ck.append(closest_point)
+            triangle_idx.append(idx)
 
         ck = np.asarray(ck).reshape(-1,3)
         return Freg, ck
