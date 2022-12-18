@@ -51,10 +51,10 @@ class ICP(object):
             closest_points = np.reshape(closest_points, (1,3))
         
         elif search_method == 'Octree':
-            closest_points, min_dist = self.fcp_.OctreeSolver(source_point)
+            closest_points, min_dist, idx = self.fcp_.OctreeSolver(source_point)
             closest_points = np.reshape(closest_points, (1,3))
 
-        return closest_points, min_dist
+        return closest_points, min_dist, idx
 
 
     def compute_icp_transform(self, source_cloud, search_method='BruteForce'):
@@ -163,7 +163,7 @@ class ICP(object):
             triangle_idx.append(idx)
 
         ck = np.asarray(ck).reshape(-1,3)
-        return Freg, ck
+        return Freg, ck, triangle_idx
 
 
 if __name__=="__main__":

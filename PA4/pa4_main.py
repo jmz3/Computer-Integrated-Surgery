@@ -111,7 +111,7 @@ def main(data_dir, output_dir, name, solver):
     ############################################################################
     # Initialize the ICP object
     ICP_ = ICP(mesh, threshold=[0.01, 0.01, 0.01], max_iter=100)
-    F,ck = ICP_.compute_icp_transform(dk, search_method=solver)
+    F,ck,idx = ICP_.compute_icp_transform(dk, search_method=solver)
     log.info(f"ICP transformation matrix :\n R = {F.R} \n t = {F.p}")
 
     ############################################################################

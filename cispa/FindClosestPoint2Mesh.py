@@ -166,7 +166,7 @@ class FindClosestPoint2Mesh:
         container = {}
         container['bound'] = 1e3
         self.octree.FindClosestPoint(a, container)
-        print(self.octree.update_container['sphere_idx'])
+        # print(self.octree.update_container['sphere_idx'])
         return self.octree.update_container['closest_point'],\
                self.octree.update_container['bound'],\
                self.octree.update_container['sphere_idx']

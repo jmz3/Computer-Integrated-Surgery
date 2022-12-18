@@ -15,6 +15,7 @@ import cispa.DataProcess as DP
 from cispa.CarteFrame import CarteFrame
 from cispa.Registration import regist_matched_points
 from cispa.IterClosestPoint import ICP
+from cispa.DeformICP import DeformICP
 
 '''
 Problem Description:
@@ -103,8 +104,11 @@ def main(data_dir, output_dir, name, solver):
     mesh = {}
     print(origin_vertex.shape)
     mesh['Nface'] = Nface
+    mesh['vertex'] = origin_vertex
     mesh['face_idx'] = face_idx
 
+    # for i in range(Nface):
+    #     # print(origin_vertex[face_idx[i,:],:])
     mode_data, mode_info,mode_type = DP.load_txt_modes(mode_path)
     Nvertex, Nmodes  = int(mode_info[0][1]), int(mode_info[1][1])
     mode=[]
@@ -112,16 +116,23 @@ def main(data_dir, output_dir, name, solver):
         mode.append(mode_data[Nvertex * i : Nvertex*(i+1)])
 
     # print(vertex.shape)
-    # mesh['vertex'] = vertex
+    
     # print(np.mean(np.abs(origin_vertex-vertex)))
     # print(origin_vertex-vertex)
     ############################################################################
     ############## Perform Iterative Closest Point here ########################
     ############################################################################
     # Initialize the ICP object
-    ICP_ = ICP(mesh, threshold = [0.01, 0.01, 0.01], max_iter=100)
-    F,ck = ICP_.compute_icp_transform(dk, search_method=solver)
-    log.info(f"ICP transformation matrix :\n R = {F.R} \n t = {F.p}")
+    # ICP_ = ICP(mesh, threshold = [0.01, 0.01, 0.01], max_iter=100)
+    # F,ck = ICP_.compute_icp_transform(dk, search_method=solver)
+    # log.info(f"ICP transformation matrix :\n R = {F.R} \n t = {F.p}")
+
+    ############################################################################
+    #################### Compute the sk here ###################################
+    DICP_ = DeformICP(mesh, mode, dk, threshold = [0.01, 0.01, 0.01], max_iter=100)
+    B = DICP_.compute_barycentric_coord()
+    
+
 
     ############################################################################
     ########################## Output the result ###############################
@@ -157,5 +168,7 @@ if __name__=="__main__":
     # A = np.array([1,2,3])
     # B = np.array([4,5,6])
     # mesh = np.array([1,2,3])
-    # mesh = mesh + B[1]*A
-    # print(mesh)
+    # # mesh = mesh + B[1]*A
+    # ans = np.concatenate((np.reshape((A-mesh),(3,1)),np.reshape((B-mesh),(3,1))),axis=1)
+    # print(ans)
+    # # print(mesh)
