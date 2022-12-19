@@ -120,11 +120,10 @@ The criterion of termination we adopted is to stop the iteration when $σ_{n}$  
 The overall structure for the ../PROGRAMS folder is described as follows: 
 
 └── **PROGRAMS**
-    ├── **PA4**			  # Test scripts are contained in this directory
+    ├── **PA5**			  # Test scripts are contained in this directory
     │   ├── **Data**	   # This DIR contains all the provided data
-    │   ├── **output**	# This DIR contains all the result of our program
-    │   ├── **pa4_main.py**	# This DIR contains all the result of our program
-	│   └── **pa4_icp_test.py**	 # Test the ICP Solver
+    │   ├── **output**	# This DIR contains all the results of our program
+	│   └── **pa5_main.py**	 # Main script that 
     └── **cispa** 											# Utility Functions are in this directory        		├── **CarteFrame.py**
         ├── **ComputeExpectValue.py** 
         ├── **CorrectDistortion.py** 	
@@ -136,8 +135,7 @@ The overall structure for the ../PROGRAMS folder is described as follows:
         ├── **Octree.py**								
         ├── **PivotCalibration.py**
 		├── **IterClosestPoint.py** 				# ICP Implementation
-
-​		└── **Registration.py**				
+		├── **DeformICP.py** 						# Perform Deformable ICP Implementation		└── **Registration.py**				
 
 
 

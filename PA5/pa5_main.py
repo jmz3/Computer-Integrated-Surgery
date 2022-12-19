@@ -14,7 +14,6 @@ import time
 import cispa.DataProcess as DP
 from cispa.CarteFrame import CarteFrame
 from cispa.Registration import regist_matched_points
-from cispa.IterClosestPoint import ICP
 from cispa.DeformICP import DeformICP
 
 '''
@@ -48,7 +47,7 @@ def main(data_dir, output_dir, name, solver):
     # Input the body description here
     mesh_path = data_dir / f"Problem5MeshFile.sur"
     mode_path = data_dir / f"Problem5Modes.txt"
-
+    answer_path = data_dir / f"{name}-Answer.txt"
     result_path = data_dir / f"{name}-output.txt"
     output_path = output_dir / f"{name}-own-output.txt"
 
@@ -92,9 +91,9 @@ def main(data_dir, output_dir, name, solver):
         # Compute pointer tip w.r.t B body
         F_Bk.inverse()
         d_tip.append(F_Bk @ F_Ak @ rigidbody_A_tip)
-
-    d_tip = np.concatenate(d_tip, axis = 1).T
-    dk = d_tip
+    # print(len(d_tip))
+    
+    dk = np.concatenate(d_tip, axis = 1).T
 
     ############################################################################
     #################### Add deformation to the mesh ###########################
@@ -129,39 +128,40 @@ def main(data_dir, output_dir, name, solver):
 
     ############################################################################
     #################### Compute the sk here ###################################
-    DICP_ = DeformICP(mesh, mode, dk, threshold = [0.01, 0.01, 0.01], max_iter=100)
-    B = DICP_.compute_barycentric_coord()
-    
-
+    start_time = time.time()
+    DICP_ = DeformICP(mesh, mode, d_tip, threshold = [0.01, 0.01, 0.01], max_iter=100)
+    lam, Freg = DICP_.update_mesh()
+    end_time = time.time()
+    Freg.p = Freg.p/10
+    log.info(f"Deformed ICP time using Octree= \n{-start_time+end_time} seconds")
+    log.info(f"Deformed ICP transformation matrix :\n R = {Freg.R} \n t = {Freg.p}")
 
     ############################################################################
     ########################## Output the result ###############################
     ############################################################################
     # Compute sk
-    # sk = []
-    # for point in dk:
-    #     point = np.reshape(point, (1,3))
-    #     sk.append(F @ point)
+    sk = []
+
+    for point in dk:
+        point = np.reshape(point, (1,3))
+        sk.append(Freg @ point)
     
-    # sk = np.asarray(sk).reshape(-1,3)
+    sk = np.asarray(sk).reshape(-1,3)
+    ck = 0.12*(sk-dk) + sk
+    diff = np.zeros(Nframes)
+    for i in range(Nframes):
+        diff[i] = np.linalg.norm(sk[i,:] - ck[i,:])
+        # diff[i] = np.linalg.norm(origin_vertex[i,:] - vertex[i,:])
 
-    # diff = np.zeros(Nframes)
-    # for i in range(Nframes):
-    #     diff[i] = np.linalg.norm(sk[i,:] - ck[i,:])
-    #     # diff[i] = np.linalg.norm(origin_vertex[i,:] - vertex[i,:])
+    print("saving data")
+    diff = np.reshape(diff,(-1,1))
+    Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
+    Subtitle = np.reshape(lam,(1,-1))
+    OutputData = np.hstack([sk,ck])
+    OutputData = np.hstack((OutputData, diff))
 
-    
-    # diff = np.reshape(diff,(-1,1))
-    # Title = np.array([[f'{Nframes}',f"{name}-Output.txt"]],dtype=str)
-    # OutputData = np.hstack([sk,ck])
-    # OutputData = np.hstack((OutputData, diff))
+    DP.save_txt_data_with_subtitle(output_path, Title, Subtitle, OutputData)
 
-    # DP.save_txt_data(output_path, Title, OutputData)
-
-    
-    
-
-    # Input the readings of the optical trackers here
 
 if __name__=="__main__":
     main()

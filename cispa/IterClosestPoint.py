@@ -48,6 +48,7 @@ class ICP(object):
         # Using Brute Force to find the closest point
         if search_method == 'BruteForce':
             closest_points, min_dist = self.fcp_.BruteForceSolver(source_point)
+            idx = []
             closest_points = np.reshape(closest_points, (1,3))
         
         elif search_method == 'Octree':

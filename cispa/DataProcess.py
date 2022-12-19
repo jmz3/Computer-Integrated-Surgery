@@ -46,6 +46,12 @@ def save_txt_data(output_path, Title, Output):
         np.savetxt(f, Title, delimiter=', ',fmt='%s')
         np.savetxt(f, Output, delimiter=' ', fmt='%10.5f')
 
+def save_txt_data_with_subtitle(output_path, Title,SubTitle, Output):
+    with open(output_path,"w") as f:
+        np.savetxt(f, Title, delimiter=', ',fmt='%s')
+        np.savetxt(f, SubTitle, delimiter=', ',fmt='%10.4f')
+        np.savetxt(f, Output, delimiter=' ', fmt='%10.4f')
+
 
 def skew(x):
     return np.array([[0, -x[2], x[1]],
