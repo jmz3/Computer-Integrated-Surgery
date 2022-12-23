@@ -131,6 +131,10 @@ class DeformICP(object):
     
     def update_mesh(self):
         for i in range(6):
+        # This module need to be revised 
+        # to check the convergence of the algorithm
+        # and find out the correct way to update the mesh
+        # range(6) is just a hardcoded number
             lam = self.compute_mode_coeff()
         
             vertices = self.mesh['vertex']
