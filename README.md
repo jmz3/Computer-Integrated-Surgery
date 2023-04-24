@@ -4,7 +4,6 @@ This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins
 
 This repository is created and maintained by
 - Jiaming "Jeremy" Zhang: jzhan282@jhu.edu
-- Chongjun Yang:          cyang94@jhu.edu
 
 The general structure is borrowed from Benjamin's Template:
 
