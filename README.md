@@ -1,17 +1,17 @@
 # Programming Assignments for CIS
 
+This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins University
+
+This repository is created and maintained by
+- Jiaming "Jeremy" Zhang: jzhan282@jhu.edu
+
 ## Plagiarism Warning
 ❗Plagiarism is a serious academic misconduct. 
 
 ❗Please adhere to the rules of this course and be aware that the author does not permit any form of copying.
 
 
-## Content
-This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins University
-
-This repository is created and maintained by
-- Jiaming "Jeremy" Zhang: jzhan282@jhu.edu
-
+## Credit
 The general structure is borrowed from Benjamin's Template:
 
 ```bibtex
