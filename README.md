@@ -1,5 +1,12 @@
 # Programming Assignments for CIS
 
+## Plagiarism Warning
+❗Plagiarism is a serious academic misconduct. 
+
+❗Please adhere to the rules of this course and be aware that the author does not permit any form of copying.
+
+
+## Content
 This is the repository for EN601.663 Computer Integrated Surgery @ Johns Hopkins University
 
 This repository is created and maintained by
@@ -19,6 +26,8 @@ The general structure is borrowed from Benjamin's Template:
 ```
 
 
+
+
 ## Dependencies
 
 This repo is developed via PYTHON 3.9.13 with the Dependencies as follows:
@@ -32,31 +41,4 @@ click
 rich
 ```
 
-## Install
 
-In a terminal, clone this repo to a specified directory:
-
-```sh
-cd ~/YOUR_DIR
-git clone https://github.com/jeremyzz830/Computer-Integrated-Surgery.git
-```
-
-Then change into the directory, create the Anacoconda environment, and activate it.
-
-```bash
-cd cispa
-conda env create -f environment.yml
-conda activate cispa
-```
-
-## Usage
-
-Tell your users how to use your code. This should include how to run the code and how to run the tests.
-
-```bash
-python pa1.py -n pa1-debug-a
-```
-
-### Unit Tests
-
-TBD
